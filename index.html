@@ -5,175 +5,350 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="theme-color" content="#1a1a1a"/>
-  <title>Minha Coleção</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <meta name="theme-color" content="#0d0810"/>
+  <title>Ma Collection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #f7f7f5;
-  --card: #ffffff;
-  --accent: #c94070;
-  --accent-soft: #f5e8ed;
-  --text: #111111;
-  --muted: #888888;
-  --border: #e8e8e4;
-  --radius: 16px;
-  --shadow: 0 1px 8px rgba(0,0,0,0.06);
+  --bg: #0d0810;
+  --bg2: #150d19;
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.09);
+  --glass-hover: rgba(255,255,255,0.07);
+  --gold: #c9a96e;
+  --gold2: #e8c98a;
+  --rose: #d4687a;
+  --rose2: #f0889a;
+  --text: #f0eae8;
+  --text2: #b8a8b0;
+  --muted: #6e5e68;
+  --radius: 20px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overscroll-behavior: none; }
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Jost', sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-tap-highlight-color: transparent;
+  min-height: 100vh;
 }
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% -10%, rgba(201,169,110,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 110%, rgba(212,104,122,0.09) 0%, transparent 55%);
+  pointer-events: none;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; opacity: 0.5;
+}
+
+/* ── HEADER ── */
 .app-header {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(247,247,245,0.95);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 20px 14px;
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: rgba(13,8,16,0.88);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 20px 18px 0;
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
 }
-.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.app-header h1 {
-  font-size: 1.1rem; font-weight: 600;
-  color: var(--text); letter-spacing: -0.02em;
+.header-top {
+  display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px;
+}
+.header-brand { display: flex; flex-direction: column; gap: 1px; }
+.header-eyebrow {
+  font-size: 0.55rem; font-weight: 500;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold); opacity: 0.9;
+}
+.header-brand h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.75rem; font-weight: 300; font-style: italic;
+  color: var(--text); letter-spacing: 0.02em; line-height: 1;
 }
 .count-badge {
-  background: var(--text); color: #fff;
-  font-size: 0.68rem; font-weight: 500;
-  padding: 4px 12px; border-radius: 20px;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 1px; padding-top: 3px;
 }
-.header-bottom { display: flex; align-items: center; gap: 6px; }
-.sync-dot {
-  display: inline-block; width: 5px; height: 5px;
-  border-radius: 50%; background: #ccc; flex-shrink: 0;
+.count-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.7rem; font-weight: 300; color: var(--gold); line-height: 1;
 }
-.sync-dot.ok      { background: #34c759; }
-.sync-dot.err     { background: #ff3b30; }
-.sync-dot.loading { background: #ff9500; animation: pulse 1s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.sync-label { font-size: 0.65rem; color: var(--muted); font-weight: 400; }
+.count-label {
+  font-size: 0.54rem; font-weight: 400; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* ── SEARCH ── */
+.search-wrap { position: relative; margin-bottom: 13px; }
+.search-icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 0.8rem; color: var(--muted); pointer-events: none;
+}
+.search-input {
+  width: 100%; padding: 12px 14px 12px 38px;
+  border: 1px solid var(--glass-border); border-radius: 50px;
+  font-family: 'Jost', sans-serif; font-size: 0.84rem; font-weight: 300;
+  color: var(--text); background: var(--glass); outline: none;
+  -webkit-appearance: none; transition: border-color 0.25s, background 0.25s;
+  letter-spacing: 0.02em;
+}
+.search-input:focus {
+  border-color: rgba(201,169,110,0.4);
+  background: rgba(255,255,255,0.06);
+}
+.search-input::placeholder { color: var(--muted); }
+.search-clear {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  font-size: 0.85rem; display: none;
+}
+.search-clear.visible { display: block; }
+
+/* ── FILTERS ── */
+.filters-wrap {
+  display: flex; gap: 7px; overflow-x: auto; padding-bottom: 16px;
+  scrollbar-width: none;
+}
+.filters-wrap::-webkit-scrollbar { display: none; }
+.filter-pill {
+  flex-shrink: 0; padding: 6px 15px; border-radius: 50px;
+  border: 1px solid var(--glass-border); background: var(--glass);
+  font-family: 'Jost', sans-serif; font-size: 0.7rem; font-weight: 400;
+  color: var(--text2); cursor: pointer; white-space: nowrap;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  transition: all 0.22s; -webkit-tap-highlight-color: transparent;
+}
+.filter-pill:active { transform: scale(0.93); }
+.filter-pill.active {
+  background: rgba(201,169,110,0.12);
+  border-color: rgba(201,169,110,0.45);
+  color: var(--gold2);
+}
+.filter-pill.active.brand-risque   { background: rgba(232,80,106,0.13); border-color: rgba(232,80,106,0.45); color: #f08090; }
+.filter-pill.active.brand-impala   { background: rgba(155,89,182,0.13); border-color: rgba(155,89,182,0.45); color: #c090e0; }
+.filter-pill.active.brand-colorama { background: rgba(58,157,232,0.13); border-color: rgba(58,157,232,0.45); color: #80c0f0; }
+.filter-pill.active.brand-outras   { background: rgba(82,199,122,0.13); border-color: rgba(82,199,122,0.45); color: #80d8a0; }
+
+/* ── SYNC ROW ── */
+.header-bottom { display: flex; align-items: center; gap: 6px; padding-bottom: 11px; }
+.sync-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+.sync-dot.ok      { background: #52c77a; }
+.sync-dot.err     { background: #e85066; }
+.sync-dot.loading { background: var(--gold); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+.sync-label { font-size: 0.6rem; color: var(--muted); font-weight: 300; letter-spacing: 0.05em; }
 .realtime-pill {
   display: inline-flex; align-items: center; gap: 4px;
-  background: rgba(52,199,89,0.08); border: 1px solid rgba(52,199,89,0.2);
+  background: rgba(82,199,122,0.08); border: 1px solid rgba(82,199,122,0.2);
   border-radius: 20px; padding: 2px 8px;
-  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em;
-  text-transform: uppercase; color: #1d7a33;
-  opacity: 0; transition: opacity 0.5s; margin-left: 4px;
+  font-size: 0.55rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #52c77a; opacity: 0; transition: opacity 0.5s; margin-left: 4px;
 }
 .realtime-pill.visible { opacity: 1; }
-.realtime-pill .rt-dot {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: #34c759; animation: pulse 1.5s infinite;
-}
-.main { padding: 16px 14px 120px; min-height: 100vh; }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.realtime-pill .rt-dot { width: 4px; height: 4px; border-radius: 50%; background: #52c77a; animation: pulse 1.5s infinite; }
+
+/* ── GRID ── */
+.main { position: relative; z-index: 1; padding: 18px 14px 140px; min-height: 100vh; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+/* ── CARD ── */
 .nail-card {
-  background: var(--card); border-radius: var(--radius);
-  box-shadow: var(--shadow); border: 1px solid var(--border);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
   overflow: hidden; position: relative;
-  animation: fadeUp 0.3s ease both;
-  transition: transform 0.15s;
+  animation: cardIn 0.45s cubic-bezier(0.22,1,0.36,1) both;
+  transition: transform 0.2s, border-color 0.2s;
 }
-@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-.nail-card:active { transform: scale(0.97); }
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.nail-card:active { transform: scale(0.96); border-color: rgba(201,169,110,0.25); }
+
 .nail-card .img-wrap {
   width: 100%; aspect-ratio: 3/4; overflow: hidden;
-  background: var(--accent-soft);
+  background: linear-gradient(160deg, #1e1225 0%, #120d18 100%);
   display: flex; align-items: center; justify-content: center; position: relative;
 }
-.nail-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-.nail-card .img-wrap .no-img { font-size: 2.4rem; opacity: 0.2; }
-.nail-card .info { padding: 10px 12px 12px; }
-.nail-card .name {
-  font-size: 0.88rem; font-weight: 500; color: var(--text);
-  margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
+.nail-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+.nail-card:active .img-wrap img { transform: scale(1.04); }
+.nail-card .img-wrap .no-img { font-size: 2.5rem; opacity: 0.13; }
+.nail-card .img-wrap::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(13,8,16,0.65) 0%, transparent 50%);
+  pointer-events: none;
 }
-.nail-card .date { font-size: 0.62rem; color: var(--muted); font-weight: 400; }
+
+.brand-ribbon {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+  padding: 4px 10px 5px;
+  font-size: 0.55rem; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(255,255,255,0.9); text-align: center;
+}
+.brand-ribbon.risque   { background: linear-gradient(90deg,rgba(232,80,106,0.7),rgba(240,136,154,0.5)); }
+.brand-ribbon.impala   { background: linear-gradient(90deg,rgba(155,89,182,0.7),rgba(192,144,224,0.5)); }
+.brand-ribbon.colorama { background: linear-gradient(90deg,rgba(58,157,232,0.7),rgba(128,192,240,0.5)); }
+.brand-ribbon.outras   { background: linear-gradient(90deg,rgba(82,199,122,0.7),rgba(128,216,160,0.5)); }
+
+.nail-card .info {
+  padding: 11px 13px 13px;
+  background: linear-gradient(180deg, rgba(21,13,25,0.5) 0%, rgba(13,8,16,0.8) 100%);
+}
+.nail-card .name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem; font-weight: 400; font-style: italic;
+  color: var(--text); margin-bottom: 5px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+}
+.nail-card .meta { display: flex; align-items: center; justify-content: space-between; }
+.nail-card .date { font-size: 0.6rem; color: var(--muted); font-weight: 300; letter-spacing: 0.04em; }
+.brand-tag {
+  font-size: 0.54rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 20px;
+}
+.brand-tag.risque   { background: rgba(232,80,106,0.18); color: #f08090; }
+.brand-tag.impala   { background: rgba(155,89,182,0.18); color: #c090e0; }
+.brand-tag.colorama { background: rgba(58,157,232,0.18); color: #80c0f0; }
+.brand-tag.outras   { background: rgba(82,199,122,0.18); color: #80d8a0; }
+
+.nail-card::after {
+  content: ''; position: absolute; bottom: 0; left: 20%; right: 20%; height: 1px;
+  background: linear-gradient(90deg,transparent,rgba(201,169,110,0.2),transparent);
+  pointer-events: none;
+}
+
+/* ── CARD ACTIONS ── */
 .card-actions {
-  position: absolute; top: 8px; right: 8px;
-  display: flex; flex-direction: column; gap: 5px; z-index: 2;
+  position: absolute; top: 9px; right: 9px;
+  display: flex; flex-direction: column; gap: 6px; z-index: 3;
 }
 .btn-action {
-  background: rgba(255,255,255,0.92); border: none; border-radius: 50%;
-  width: 28px; height: 28px;
+  background: rgba(13,8,16,0.7); border: 1px solid var(--glass-border);
+  border-radius: 50%; width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 0.62rem;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.12); backdrop-filter: blur(4px);
-  transition: transform 0.1s;
+  cursor: pointer; font-size: 0.65rem; color: var(--text2);
+  backdrop-filter: blur(8px); transition: transform 0.12s;
 }
-.btn-action:active { transform: scale(0.82); }
-.btn-action.edit { color: #555; }
-.btn-action.delete { color: var(--accent); }
-.empty-state { text-align: center; padding: 60px 24px; color: var(--muted); grid-column: span 2; }
-.empty-state .emoji { font-size: 3rem; margin-bottom: 14px; display: block; opacity: 0.5; }
-.empty-state .empty-title { font-size: 1rem; font-weight: 500; color: var(--text); margin-bottom: 6px; }
-.empty-state p { font-size: 0.82rem; font-weight: 300; line-height: 1.7; }
+.btn-action:active { transform: scale(0.8); }
+
+/* ── EMPTY / SPINNER ── */
+.empty-state { text-align: center; padding: 70px 24px; color: var(--muted); grid-column: span 2; }
+.empty-state .emoji { font-size: 2.8rem; margin-bottom: 16px; display: block; opacity: 0.3; }
+.empty-state .empty-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem; font-weight: 300; font-style: italic;
+  color: var(--text2); margin-bottom: 8px;
+}
+.empty-state p { font-size: 0.8rem; font-weight: 300; line-height: 1.8; }
 .spinner {
-  width: 28px; height: 28px;
-  border: 2px solid var(--border); border-top-color: var(--accent);
-  border-radius: 50%; animation: spin 0.75s linear infinite;
-  margin: 60px auto; grid-column: span 2;
+  width: 26px; height: 26px;
+  border: 1.5px solid var(--glass-border); border-top-color: var(--gold);
+  border-radius: 50%; animation: spin 1s linear infinite;
+  margin: 70px auto; grid-column: span 2;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── FAB ── */
 .fab {
-  position: fixed; bottom: calc(var(--safe-bottom) + 24px); right: 20px;
+  position: fixed; bottom: calc(var(--safe-bottom) + 24px); right: 18px;
   z-index: 200; width: 52px; height: 52px; border-radius: 50%;
-  background: var(--text);
-  color: #fff; font-size: 1.4rem; border: none; cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #1a1008; font-size: 1.4rem; font-weight: 600;
+  border: none; cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(201,169,110,0.3), 0 8px 28px rgba(201,169,110,0.22);
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.18s;
+  transition: transform 0.18s, box-shadow 0.18s;
 }
-.fab:active { transform: scale(0.88); }
+.fab:active { transform: scale(0.86); box-shadow: 0 0 0 1px rgba(201,169,110,0.2), 0 4px 12px rgba(201,169,110,0.12); }
+
+/* ── OVERLAY & SHEET ── */
 .overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 300;
+  position: fixed; inset: 0; background: rgba(8,5,12,0.6); z-index: 300;
   opacity: 0; pointer-events: none; transition: opacity 0.3s;
-  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
 }
 .overlay.open { opacity: 1; pointer-events: all; }
 .sheet {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
-  background: var(--card); border-radius: 22px 22px 0 0;
-  padding: 0 20px calc(28px + var(--safe-bottom));
+  background: #110c16;
+  border-top: 1px solid var(--glass-border);
+  border-radius: 26px 26px 0 0;
+  padding: 0 20px calc(32px + var(--safe-bottom));
   transform: translateY(100%);
-  transition: transform 0.38s cubic-bezier(0.32,0.72,0,1);
-  max-height: 93vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
-  box-shadow: 0 -4px 30px rgba(0,0,0,0.08);
+  transition: transform 0.42s cubic-bezier(0.32,0.72,0,1);
+  max-height: 94vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  box-shadow: 0 -2px 40px rgba(0,0,0,0.5), 0 -1px 0 rgba(201,169,110,0.1);
 }
 .sheet.open { transform: translateY(0); }
-.sheet-handle { width: 32px; height: 3px; background: var(--border); border-radius: 2px; margin: 14px auto 20px; }
-.sheet-header { margin-bottom: 20px; }
-.sheet h2 { font-size: 1.05rem; font-weight: 600; color: var(--text); }
-.sheet .sheet-subtitle { font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-top: 3px; }
-.field { margin-bottom: 16px; }
+.sheet-handle {
+  width: 34px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+  margin: 14px auto 24px; border-radius: 2px;
+}
+.sheet-header { margin-bottom: 24px; }
+.sheet h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; font-weight: 300; font-style: italic;
+  color: var(--text);
+}
+.sheet .sheet-subtitle { font-size: 0.68rem; color: var(--muted); font-weight: 300; letter-spacing: 0.04em; margin-top: 4px; }
+
+/* ── FORM ── */
+.field { margin-bottom: 18px; }
 .field label {
-  display: block; font-size: 0.65rem; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px;
+  display: block; font-size: 0.58rem; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); opacity: 0.8; margin-bottom: 8px;
 }
 .field input[type="text"],
-.field input[type="date"] {
-  width: 100%; padding: 13px 14px;
-  border: 1px solid var(--border); border-radius: 12px;
-  font-family: 'Inter', sans-serif; font-size: 0.92rem;
-  color: var(--text); background: var(--bg); outline: none;
-  -webkit-appearance: none; appearance: none; transition: border-color 0.2s;
+.field input[type="date"],
+.field select {
+  width: 100%; padding: 13px 15px;
+  border: 1px solid var(--glass-border); border-radius: 12px;
+  font-family: 'Jost', sans-serif; font-size: 0.88rem; font-weight: 300;
+  color: var(--text); background: var(--glass); outline: none;
+  -webkit-appearance: none; appearance: none;
+  transition: border-color 0.22s, background 0.22s;
+  letter-spacing: 0.02em;
 }
-.field input:focus { border-color: var(--text); background: #fff; }
+.field input:focus, .field select:focus {
+  border-color: rgba(201,169,110,0.4);
+  background: rgba(255,255,255,0.05);
+}
+.field input::placeholder { color: var(--muted); }
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236e5e68' stroke-width='1.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center;
+  padding-right: 36px; cursor: pointer;
+}
+.field select option { background: #110c16; color: var(--text); }
+
+.brand-select-wrap { position: relative; }
+.brand-dot-preview {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  width: 8px; height: 8px; border-radius: 50%; background: var(--muted);
+  pointer-events: none; transition: background 0.22s;
+}
+.brand-select-wrap select { padding-left: 30px; }
+
+/* ── IMAGE UPLOAD ── */
 .image-upload-label {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 7px; width: 100%; height: 120px;
-  border: 1.5px dashed var(--border); border-radius: 12px;
-  cursor: pointer; background: var(--bg); overflow: hidden; position: relative;
-  transition: border-color 0.2s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; width: 100%; height: 120px;
+  border: 1px dashed rgba(201,169,110,0.2); border-radius: 14px;
+  cursor: pointer; background: var(--glass); overflow: hidden; position: relative;
+  transition: border-color 0.22s, background 0.22s;
 }
-.image-upload-label:active { border-color: var(--accent); }
-.image-upload-label .up-icon { font-size: 1.8rem; }
-.image-upload-label .up-hint { font-size: 0.75rem; color: var(--muted); text-align: center; padding: 0 16px; line-height: 1.4; }
+.image-upload-label:active { border-color: rgba(201,169,110,0.5); background: rgba(201,169,110,0.05); }
+.image-upload-label .up-icon { font-size: 1.7rem; }
+.image-upload-label .up-hint { font-size: 0.7rem; color: var(--muted); text-align: center; padding: 0 16px; line-height: 1.5; font-weight: 300; }
 .image-upload-label img#preview,
 .image-upload-label img#editPreview {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;
@@ -181,62 +356,78 @@ body {
 #imgInput, #editImgInput { display: none; }
 .url-divider {
   display: flex; align-items: center; gap: 10px;
-  margin: 12px 0 8px; color: var(--muted); font-size: 0.65rem;
-  font-weight: 500; letter-spacing: 0.05em;
+  margin: 13px 0 9px; color: var(--muted);
+  font-size: 0.6rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase;
 }
-.url-divider::before, .url-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.url-divider::before, .url-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+}
+
+/* ── BUTTONS ── */
 .btn-submit {
   width: 100%; padding: 15px;
-  background: var(--text);
-  color: #fff; border: none; border-radius: 12px;
-  font-family: 'Inter', sans-serif; font-size: 0.92rem; font-weight: 600;
-  cursor: pointer; margin-top: 8px;
-  letter-spacing: 0.01em; transition: opacity 0.2s, transform 0.15s;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+  color: #1a1008; border: none; border-radius: 12px;
+  font-family: 'Jost', sans-serif; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; margin-top: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 4px 20px rgba(201,169,110,0.2);
 }
-.btn-submit:active { opacity: 0.8; transform: scale(0.99); }
-.btn-submit:disabled { opacity: 0.4; }
+.btn-submit:active { opacity: 0.85; transform: scale(0.99); }
+.btn-submit:disabled { opacity: 0.3; box-shadow: none; }
 .btn-submit.secondary {
-  background: transparent; color: var(--text);
-  border: 1px solid var(--border); margin-top: 8px;
+  background: transparent; color: var(--text2);
+  border: 1px solid var(--glass-border); margin-top: 8px; box-shadow: none;
+  font-weight: 400; text-transform: none; letter-spacing: 0.02em;
 }
+
+/* ── MODAL ── */
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 500;
+  position: fixed; inset: 0; background: rgba(8,5,12,0.6); z-index: 500;
   display: flex; align-items: flex-end;
   opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  backdrop-filter: blur(8px);
 }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 .modal-box {
-  background: var(--card); border-radius: 20px 20px 0 0;
-  padding: 28px 20px calc(24px + var(--safe-bottom)); width: 100%;
+  background: #110c16; border-top: 1px solid var(--glass-border);
+  border-radius: 24px 24px 0 0;
+  padding: 28px 22px calc(28px + var(--safe-bottom)); width: 100%;
   transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+  transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
 }
 .modal-overlay.open .modal-box { transform: translateY(0); }
-.modal-icon { text-align: center; font-size: 1.8rem; margin-bottom: 10px; }
-.modal-box p { font-size: 0.9rem; color: var(--muted); text-align: center; margin-bottom: 22px; line-height: 1.55; }
-.modal-box p strong { color: var(--text); font-weight: 600; }
+.modal-icon { text-align: center; font-size: 1.8rem; margin-bottom: 12px; }
+.modal-box p { font-size: 0.88rem; color: var(--text2); text-align: center; margin-bottom: 24px; line-height: 1.6; font-weight: 300; }
+.modal-box p strong { color: var(--text); font-weight: 500; }
 .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .btn-cancel {
-  padding: 14px; border-radius: 12px; border: 1px solid var(--border);
-  background: transparent; font-family: 'Inter', sans-serif;
-  font-size: 0.88rem; color: var(--muted); cursor: pointer;
+  padding: 14px; border-radius: 12px;
+  border: 1px solid var(--glass-border); background: transparent;
+  font-family: 'Jost', sans-serif; font-size: 0.84rem; color: var(--muted); cursor: pointer;
 }
 .btn-confirm-del {
-  padding: 14px; border-radius: 12px; border: none;
-  background: var(--accent);
-  color: #fff; font-family: 'Inter', sans-serif;
-  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  padding: 14px; border-radius: 12px;
+  background: rgba(232,80,106,0.13); border: 1px solid rgba(232,80,106,0.3);
+  color: #f08090; font-family: 'Jost', sans-serif;
+  font-size: 0.84rem; font-weight: 500; cursor: pointer;
 }
+
+/* ── TOAST ── */
 #toast {
-  position: fixed; bottom: calc(var(--safe-bottom) + 90px); left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: var(--text); color: #fff;
-  padding: 11px 22px; border-radius: 30px; font-size: 0.82rem; font-weight: 500;
+  position: fixed; bottom: calc(var(--safe-bottom) + 96px); left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(21,13,25,0.96); border: 1px solid var(--glass-border);
+  color: var(--text); padding: 11px 24px;
+  border-radius: 30px; font-size: 0.8rem; font-weight: 400; letter-spacing: 0.02em;
   opacity: 0; transition: opacity 0.25s, transform 0.25s;
   pointer-events: none; z-index: 999; white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.5); backdrop-filter: blur(12px);
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 @media (min-width: 600px) {
   .grid { grid-template-columns: repeat(3, 1fr); }
   .main { max-width: 720px; margin: 0 auto; }
@@ -247,9 +438,32 @@ body {
 
 <div class="app-header">
   <div class="header-top">
-    <h1>💅 Minha Coleção</h1>
-    <span class="count-badge" id="countBadge">0 esmaltes</span>
+    <div class="header-brand">
+      <span class="header-eyebrow">✦ Coleção pessoal</span>
+      <h1>Esmaltes</h1>
+    </div>
+    <div class="count-badge">
+      <span class="count-num" id="countNum">0</span>
+      <span class="count-label">esmaltes</span>
+    </div>
   </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="searchInput" type="text"
+      placeholder="Pesquisar pelo nome..." autocomplete="off" autocorrect="off"
+      oninput="applyFilters()"/>
+    <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+  </div>
+
+  <div class="filters-wrap">
+    <button class="filter-pill active" data-brand="all" onclick="setFilter(this)">✦ Todos</button>
+    <button class="filter-pill brand-risque" data-brand="risque" onclick="setFilter(this)">Risqué</button>
+    <button class="filter-pill brand-impala" data-brand="impala" onclick="setFilter(this)">Impala</button>
+    <button class="filter-pill brand-colorama" data-brand="colorama" onclick="setFilter(this)">Colorama</button>
+    <button class="filter-pill brand-outras" data-brand="outras" onclick="setFilter(this)">Outras</button>
+  </div>
+
   <div class="header-bottom">
     <span class="sync-dot loading" id="syncDot"></span>
     <span class="sync-label" id="syncLabel">Conectando...</span>
@@ -270,8 +484,8 @@ body {
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <h2>Adicionar Esmalte</h2>
-    <div class="sheet-subtitle">Registre um novo esmalte na sua coleção</div>
+    <h2>Novo Esmalte</h2>
+    <div class="sheet-subtitle">Adicione à sua coleção</div>
   </div>
   <div class="field">
     <label>Foto</label>
@@ -281,7 +495,7 @@ body {
       <img id="preview" alt="preview"/>
     </label>
     <input type="file" id="imgInput" accept="image/*"/>
-    <div class="url-divider"><span>ou cole a URL</span></div>
+    <div class="url-divider"><span>ou URL</span></div>
     <input type="text" id="urlInput" placeholder="https://..." oninput="handleUrlInput()" autocomplete="off" autocorrect="off"/>
   </div>
   <div class="field">
@@ -289,10 +503,23 @@ body {
     <input type="text" id="nameInput" placeholder="Ex: Rosa Quartzo" autocomplete="off"/>
   </div>
   <div class="field">
+    <label>Marca</label>
+    <div class="brand-select-wrap">
+      <span class="brand-dot-preview" id="brandDotPreview"></span>
+      <select id="brandInput" onchange="updateBrandDot('brandDotPreview','brandInput')">
+        <option value="">— Selecione a marca —</option>
+        <option value="risque">Risqué</option>
+        <option value="impala">Impala</option>
+        <option value="colorama">Colorama</option>
+        <option value="outras">Outras Marcas</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
     <label>Data</label>
     <input type="date" id="dateInput"/>
   </div>
-  <button class="btn-submit" id="btnSubmit" onclick="addNail()">＋ Adicionar</button>
+  <button class="btn-submit" id="btnSubmit" onclick="addNail()">Adicionar</button>
 </div>
 
 <!-- Sheet: Editar -->
@@ -313,7 +540,7 @@ body {
       <img id="editPreview" alt="preview"/>
     </label>
     <input type="file" id="editImgInput" accept="image/*"/>
-    <div class="url-divider"><span>ou cole a URL</span></div>
+    <div class="url-divider"><span>ou URL</span></div>
     <input type="text" id="editUrlInput" placeholder="https://..." oninput="handleEditUrlInput()" autocomplete="off" autocorrect="off"/>
   </div>
   <div class="field">
@@ -321,10 +548,23 @@ body {
     <input type="text" id="editNameInput" placeholder="Ex: Rosa Quartzo" autocomplete="off"/>
   </div>
   <div class="field">
+    <label>Marca</label>
+    <div class="brand-select-wrap">
+      <span class="brand-dot-preview" id="editBrandDotPreview"></span>
+      <select id="editBrandInput" onchange="updateBrandDot('editBrandDotPreview','editBrandInput')">
+        <option value="">— Selecione a marca —</option>
+        <option value="risque">Risqué</option>
+        <option value="impala">Impala</option>
+        <option value="colorama">Colorama</option>
+        <option value="outras">Outras Marcas</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
     <label>Data</label>
     <input type="date" id="editDateInput"/>
   </div>
-  <button class="btn-submit" id="btnEditSubmit" onclick="saveEdit()">✓ Salvar Alterações</button>
+  <button class="btn-submit" id="btnEditSubmit" onclick="saveEdit()">Salvar Alterações</button>
 </div>
 
 <!-- Modal: Confirmar Delete -->
@@ -344,12 +584,42 @@ body {
 <script>
   window._today = new Date().toISOString().split('T')[0];
   document.getElementById('dateInput').value = window._today;
-  window._imgBase64 = null;
-  window._imgFile   = null;
-  window._editImgBase64 = null;
-  window._editImgFile   = null;
+  window._imgBase64 = null; window._imgFile = null;
+  window._editImgBase64 = null; window._editImgFile = null;
 
-  // ── ADD SHEET ──
+  const BRAND_COLORS = {
+    risque:'#e8506a', impala:'#9b59b6', colorama:'#3a9de8', outras:'#52c77a', '':'#6e5e68'
+  };
+  window.updateBrandDot = function(dotId, selectId) {
+    const val = document.getElementById(selectId).value;
+    document.getElementById(dotId).style.background = BRAND_COLORS[val] || BRAND_COLORS[''];
+  };
+
+  window._allItems = [];
+  window._activeFilter = 'all';
+
+  window.setFilter = function(btn) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    window._activeFilter = btn.dataset.brand;
+    applyFilters();
+  };
+  window.applyFilters = function() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    document.getElementById('searchClear').classList.toggle('visible', query.length > 0);
+    let filtered = window._allItems;
+    if (window._activeFilter !== 'all')
+      filtered = filtered.filter(n => (n.brand||'') === window._activeFilter);
+    if (query)
+      filtered = filtered.filter(n => (n.name||'').toLowerCase().includes(query));
+    renderGrid(filtered, true);
+  };
+  window.clearSearch = function() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchClear').classList.remove('visible');
+    applyFilters();
+  };
+
   window.openSheet = () => {
     document.getElementById('sheet').classList.add('open');
     document.getElementById('overlay').classList.add('open');
@@ -358,8 +628,6 @@ body {
     document.getElementById('sheet').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
   };
-
-  // ── EDIT SHEET ──
   window.openEditSheet = () => {
     document.getElementById('editSheet').classList.add('open');
     document.getElementById('editOverlay').classList.add('open');
@@ -368,17 +636,13 @@ body {
     document.getElementById('editSheet').classList.remove('open');
     document.getElementById('editOverlay').classList.remove('open');
   };
-
   window.showToast = function(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2800);
   };
-  window.closeModal = function() {
-    document.getElementById('modalOverlay').classList.remove('open');
-  };
+  window.closeModal = function() { document.getElementById('modalOverlay').classList.remove('open'); };
 
-  // ── PREVIEW helpers: Add ──
   function setPreview(src) {
     const p = document.getElementById('preview');
     p.src = src; p.style.display = 'block';
@@ -391,8 +655,6 @@ body {
     document.querySelector('#imgLabel .up-icon').style.display = '';
     document.getElementById('uploadHint').style.display = '';
   };
-
-  // ── PREVIEW helpers: Edit ──
   function setEditPreview(src) {
     const p = document.getElementById('editPreview');
     p.src = src; p.style.display = 'block';
@@ -406,89 +668,57 @@ body {
     document.getElementById('editUploadHint').style.display = '';
   }
 
-  // ── FILE INPUT: Add ──
+  function compress(file, setFn, b64key) {
+    const ou = URL.createObjectURL(file); setFn(ou);
+    const r = new FileReader();
+    r.onload = e => {
+      const i = new Image();
+      i.onload = () => {
+        try {
+          const MAX=900; let w=i.width, h=i.height;
+          if(w>h&&w>MAX){h=Math.round(h*MAX/w);w=MAX;} else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+          const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+          cv.getContext('2d').drawImage(i,0,0,w,h);
+          window[b64key]=cv.toDataURL('image/jpeg',0.78);
+          URL.revokeObjectURL(ou); setFn(window[b64key]);
+        } catch(err){}
+      };
+      i.src = e.target.result;
+    };
+    r.readAsDataURL(file);
+  }
+
   document.getElementById('imgInput').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { showToast('⚠️ Selecione uma imagem válida.'); this.value = ''; return; }
-    document.getElementById('urlInput').value = '';
-    window._imgFile = file; window._imgBase64 = null;
-    const objectUrl = URL.createObjectURL(file);
-    setPreview(objectUrl);
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const MAX = 900; let w = img.width, h = img.height;
-          if (w > h && w > MAX) { h = Math.round(h*MAX/w); w = MAX; }
-          else if (h > MAX)     { w = Math.round(w*MAX/h); h = MAX; }
-          const cv = document.createElement('canvas');
-          cv.width = w; cv.height = h;
-          cv.getContext('2d').drawImage(img, 0, 0, w, h);
-          window._imgBase64 = cv.toDataURL('image/jpeg', 0.78);
-          URL.revokeObjectURL(objectUrl);
-          setPreview(window._imgBase64);
-        } catch(err) {}
-      };
-      img.onerror = () => { showToast('⚠️ Erro ao carregar imagem.'); window._imgFile = null; clearPreview(); };
-      img.src = e.target.result;
-    };
-    reader.onerror = () => { showToast('⚠️ Erro ao ler arquivo.'); window._imgFile = null; clearPreview(); };
-    reader.readAsDataURL(file);
+    const f=this.files[0]; if(!f) return;
+    if(!f.type.startsWith('image/')){ showToast('⚠️ Imagem inválida.'); this.value=''; return; }
+    document.getElementById('urlInput').value='';
+    window._imgFile=f; window._imgBase64=null;
+    compress(f, setPreview, '_imgBase64');
   });
-
   window.handleUrlInput = () => {
-    const url = document.getElementById('urlInput').value.trim();
-    document.getElementById('imgInput').value = '';
-    window._imgBase64 = null; window._imgFile = null;
-    url ? setPreview(url) : clearPreview();
+    const u=document.getElementById('urlInput').value.trim();
+    document.getElementById('imgInput').value='';
+    window._imgBase64=null; window._imgFile=null;
+    u ? setPreview(u) : clearPreview();
   };
-
-  // ── FILE INPUT: Edit ──
   document.getElementById('editImgInput').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { showToast('⚠️ Selecione uma imagem válida.'); this.value = ''; return; }
-    document.getElementById('editUrlInput').value = '';
-    window._editImgFile = file; window._editImgBase64 = null;
-    const objectUrl = URL.createObjectURL(file);
-    setEditPreview(objectUrl);
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const MAX = 900; let w = img.width, h = img.height;
-          if (w > h && w > MAX) { h = Math.round(h*MAX/w); w = MAX; }
-          else if (h > MAX)     { w = Math.round(w*MAX/h); h = MAX; }
-          const cv = document.createElement('canvas');
-          cv.width = w; cv.height = h;
-          cv.getContext('2d').drawImage(img, 0, 0, w, h);
-          window._editImgBase64 = cv.toDataURL('image/jpeg', 0.78);
-          URL.revokeObjectURL(objectUrl);
-          setEditPreview(window._editImgBase64);
-        } catch(err) {}
-      };
-      img.onerror = () => { showToast('⚠️ Erro ao carregar imagem.'); window._editImgFile = null; };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+    const f=this.files[0]; if(!f) return;
+    if(!f.type.startsWith('image/')){ showToast('⚠️ Imagem inválida.'); this.value=''; return; }
+    document.getElementById('editUrlInput').value='';
+    window._editImgFile=f; window._editImgBase64=null;
+    compress(f, setEditPreview, '_editImgBase64');
   });
-
   window.handleEditUrlInput = () => {
-    const url = document.getElementById('editUrlInput').value.trim();
-    document.getElementById('editImgInput').value = '';
-    window._editImgBase64 = null; window._editImgFile = null;
-    url ? setEditPreview(url) : clearEditPreview();
+    const u=document.getElementById('editUrlInput').value.trim();
+    document.getElementById('editImgInput').value='';
+    window._editImgBase64=null; window._editImgFile=null;
+    u ? setEditPreview(u) : clearEditPreview();
   };
 
-  // ── Sheet swipe down ──
-  [['sheet','closeSheet'],['editSheet','closeEditSheet']].forEach(([id, fn]) => {
-    const el = document.getElementById(id);
-    let _startY = 0;
-    el.addEventListener('touchstart', e => { _startY = e.touches[0].clientY; }, {passive:true});
-    el.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - _startY > 80) window[fn](); }, {passive:true});
+  [['sheet','closeSheet'],['editSheet','closeEditSheet']].forEach(([id,fn])=>{
+    const el=document.getElementById(id); let sy=0;
+    el.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});
+    el.addEventListener('touchend',  e=>{if(e.changedTouches[0].clientY-sy>80)window[fn]();},{passive:true});
   });
 </script>
 
@@ -498,210 +728,184 @@ body {
   const SUPABASE_URL      = 'https://irkintnlpyryynewafer.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlya2ludG5scHlyeXluZXdhZmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzU5MzgsImV4cCI6MjA4OTg1MTkzOH0.SE1bzdRRaHwGFXk2PyiPDBoAudS9kbAAL5xWWIvkeyQ';
 
-  function setSyncStatus(state, label) {
-    document.getElementById('syncDot').className = `sync-dot ${state}`;
-    document.getElementById('syncLabel').textContent = label;
+  const BRAND_LABELS = {risque:'Risqué',impala:'Impala',colorama:'Colorama',outras:'Outras'};
+
+  function setSyncStatus(state,label){
+    document.getElementById('syncDot').className=`sync-dot ${state}`;
+    document.getElementById('syncLabel').textContent=label;
   }
-  function escHtml(s) {
-    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function escAttr(s) { return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
-  function fmtDate(d) {
-    if (!d) return '';
-    const [y,m,day] = d.split('-');
-    return `${day}/${m}/${y}`;
+  function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escAttr(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+  function fmtDate(d){
+    if(!d) return '';
+    const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`;
   }
 
-  function renderGrid(items) {
-    const grid = document.getElementById('grid');
-    document.getElementById('countBadge').textContent =
-      `${items.length} esmalte${items.length !== 1 ? 's' : ''}`;
-    if (!items.length) {
-      grid.innerHTML = `<div class="empty-state">
-        <span class="emoji">🧴</span>
-        <div class="empty-title">Coleção vazia</div>
-        <p>Toque no <strong style="color:var(--text)">＋</strong> para adicionar<br>seu primeiro esmalte!</p>
+  window.renderGrid = function(items, isFiltered) {
+    const grid=document.getElementById('grid');
+    const total=window._allItems.length;
+    document.getElementById('countNum').textContent = isFiltered ? items.length : total;
+
+    if(!items.length){
+      const isS=document.getElementById('searchInput').value.trim().length>0;
+      grid.innerHTML=`<div class="empty-state">
+        <span class="emoji">${isS?'🔍':'🧴'}</span>
+        <div class="empty-title">${isS?'Sem resultados':'Coleção vazia'}</div>
+        <p>${isS?'Nenhum esmalte com esse nome.':'Toque no <strong style="color:var(--gold)">＋</strong> para adicionar<br>seu primeiro esmalte.'}</p>
       </div>`;
       return;
     }
-    grid.innerHTML = items.map((n, i) => `
-      <div class="nail-card" style="animation-delay:${i*0.04}s">
+    grid.innerHTML = items.map((n,i)=>{
+      const b=n.brand||''; const bl=BRAND_LABELS[b]||'';
+      const ribbon=b?`<div class="brand-ribbon ${escHtml(b)}">${escHtml(bl)}</div>`:'';
+      const tag   =b?`<span class="brand-tag ${escHtml(b)}">${escHtml(bl)}</span>`:'';
+      return `
+      <div class="nail-card" style="animation-delay:${i*0.05}s">
         <div class="img-wrap">
           ${n.img
-            ? `<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" loading="lazy"
-                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-               <span class="no-img" style="display:none">🧴</span>`
-            : `<span class="no-img">🧴</span>`}
+            ?`<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" loading="lazy"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+              <span class="no-img" style="display:none">🧴</span>`
+            :`<span class="no-img">🧴</span>`}
+          ${ribbon}
         </div>
         <div class="info">
           <div class="name">${escHtml(n.name)}</div>
-          <div class="date">${fmtDate(n.date)}</div>
+          <div class="meta">
+            <div class="date">${fmtDate(n.date)}</div>
+            ${tag}
+          </div>
         </div>
         <div class="card-actions">
           <button class="btn-action edit"
-            onclick="window._openEdit('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.date||'')}','${escAttr(n.img||'')}')">✎</button>
+            onclick="window._openEdit('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.date||'')}','${escAttr(n.img||'')}','${escAttr(n.brand||'')}')">✎</button>
           <button class="btn-action delete"
             onclick="window._askDelete('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.img||'')}')">✕</button>
         </div>
-      </div>`).join('');
-  }
+      </div>`;
+    }).join('');
+  };
 
   let supabase;
-  try { supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
-  catch(e) { setSyncStatus('err', 'Erro ao inicializar'); renderGrid([]); throw e; }
+  try { supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY); }
+  catch(e){ setSyncStatus('err','Erro'); window.renderGrid([]); throw e; }
 
-  async function fetchItems() {
-    const { data, error } = await supabase
-      .from('esmaltes').select('*').order('date', {ascending: true});
-    if (error) { console.error(error); setSyncStatus('err', 'Erro ao carregar'); renderGrid([]); return; }
-    renderGrid(Array.isArray(data) ? data : []);
-    setSyncStatus('ok', 'Sincronizado');
+  async function fetchItems(){
+    const {data,error}=await supabase.from('esmaltes').select('*').order('date',{ascending:true});
+    if(error){ setSyncStatus('err','Erro ao carregar'); window.renderGrid([]); return; }
+    window._allItems=Array.isArray(data)?data:[];
+    window.applyFilters();
+    setSyncStatus('ok','Sincronizado');
   }
 
-  const loadTimeout = setTimeout(() => {
-    setSyncStatus('err', 'Tempo esgotado — verifique conexão');
-    renderGrid([]);
-  }, 8000);
-
-  fetchItems()
-    .then(() => clearTimeout(loadTimeout))
-    .catch(() => { clearTimeout(loadTimeout); setSyncStatus('err', 'Sem conexão'); renderGrid([]); });
+  const lt=setTimeout(()=>{ setSyncStatus('err','Tempo esgotado'); window.renderGrid([]); },8000);
+  fetchItems().then(()=>clearTimeout(lt)).catch(()=>{ clearTimeout(lt); setSyncStatus('err','Sem conexão'); window.renderGrid([]); });
 
   try {
     supabase.channel('esmaltes-changes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'esmaltes' }, () => fetchItems())
-      .on('postgres_changes', { event: 'DELETE',  schema: 'public', table: 'esmaltes' }, () => fetchItems())
-      .on('postgres_changes', { event: 'UPDATE',  schema: 'public', table: 'esmaltes' }, () => fetchItems())
-      .subscribe(status => {
-        if (status === 'SUBSCRIBED') {
-          setSyncStatus('ok', 'Ao vivo');
-          document.getElementById('realtimePill').classList.add('visible');
-        }
-        if (status === 'CHANNEL_ERROR') {
-          setSyncStatus('err', 'Erro de conexão');
-          document.getElementById('realtimePill').classList.remove('visible');
-        }
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'esmaltes'},()=>fetchItems())
+      .on('postgres_changes',{event:'DELETE', schema:'public',table:'esmaltes'},()=>fetchItems())
+      .on('postgres_changes',{event:'UPDATE', schema:'public',table:'esmaltes'},()=>fetchItems())
+      .subscribe(status=>{
+        if(status==='SUBSCRIBED'){ setSyncStatus('ok','Ao vivo'); document.getElementById('realtimePill').classList.add('visible'); }
+        if(status==='CHANNEL_ERROR'){ setSyncStatus('err','Erro'); document.getElementById('realtimePill').classList.remove('visible'); }
       });
-  } catch(e) {}
+  } catch(e){}
 
-  // ── ADICIONAR ──
-  window.addNail = async function() {
-    const name = document.getElementById('nameInput').value.trim();
-    const date = document.getElementById('dateInput').value;
-    const url  = document.getElementById('urlInput').value.trim();
-    if (!name) { showToast('⚠️ Informe o nome do esmalte!'); return; }
-    if (!date) { showToast('⚠️ Informe a data!'); return; }
-    const btn = document.getElementById('btnSubmit');
-    btn.disabled = true; btn.textContent = 'Salvando...';
+  window.addNail=async function(){
+    const name =document.getElementById('nameInput').value.trim();
+    const brand=document.getElementById('brandInput').value;
+    const date =document.getElementById('dateInput').value;
+    const url  =document.getElementById('urlInput').value.trim();
+    if(!name){showToast('⚠️ Informe o nome!');return;}
+    if(!date){showToast('⚠️ Informe a data!');return;}
+    const btn=document.getElementById('btnSubmit');
+    btn.disabled=true; btn.textContent='Salvando...';
     try {
-      let imgUrl = url || null;
-      if (window._imgFile) {
-        try {
-          const ext  = (window._imgFile.name.split('.').pop() || 'jpg').toLowerCase();
-          const path = `esmaltes/${Date.now()}.${ext}`;
-          const { error: upErr } = await supabase.storage
-            .from('fotos').upload(path, window._imgFile, {contentType: window._imgFile.type});
-          imgUrl = upErr
-            ? (window._imgBase64 || null)
-            : supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
-        } catch(e) { imgUrl = window._imgBase64 || null; }
+      let imgUrl=url||null;
+      if(window._imgFile){
+        try{
+          const ext=(window._imgFile.name.split('.').pop()||'jpg').toLowerCase();
+          const path=`esmaltes/${Date.now()}.${ext}`;
+          const {error:upErr}=await supabase.storage.from('fotos').upload(path,window._imgFile,{contentType:window._imgFile.type});
+          imgUrl=upErr?(window._imgBase64||null):supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
+        }catch(e){imgUrl=window._imgBase64||null;}
       }
-      const { error } = await supabase.from('esmaltes').insert([{name, date, img: imgUrl}]);
-      if (error) throw error;
-      document.getElementById('nameInput').value = '';
-      document.getElementById('dateInput').value = window._today;
-      document.getElementById('imgInput').value  = '';
-      document.getElementById('urlInput').value  = '';
-      clearPreview();
-      window._imgBase64 = null; window._imgFile = null;
-      closeSheet();
-      showToast('✅ Esmalte adicionado!');
-    } catch(e) {
-      console.error(e);
-      showToast('❌ Erro ao salvar: ' + (e.message || 'verifique a conexão'));
-    } finally {
-      btn.disabled = false; btn.textContent = '＋ Adicionar';
-    }
+      const {error}=await supabase.from('esmaltes').insert([{name,brand:brand||null,date,img:imgUrl}]);
+      if(error)throw error;
+      document.getElementById('nameInput').value='';
+      document.getElementById('brandInput').value='';
+      document.getElementById('dateInput').value=window._today;
+      document.getElementById('imgInput').value='';
+      document.getElementById('urlInput').value='';
+      window.updateBrandDot('brandDotPreview','brandInput');
+      clearPreview(); window._imgBase64=null; window._imgFile=null;
+      closeSheet(); showToast('✦ Esmalte adicionado!');
+    }catch(e){ showToast('❌ Erro: '+(e.message||'verifique a conexão')); }
+    finally{ btn.disabled=false; btn.textContent='Adicionar'; }
   };
 
-  // ── ABRIR EDITAR ──
-  window._openEdit = function(id, name, date, img) {
-    window._editImgBase64 = null;
-    window._editImgFile   = null;
-    document.getElementById('editId').value   = id;
-    document.getElementById('editOldImg').value = img;
-    document.getElementById('editNameInput').value = name;
-    document.getElementById('editDateInput').value = date;
-    document.getElementById('editImgInput').value  = '';
-    document.getElementById('editUrlInput').value  = '';
-    if (img) {
-      setEditPreview(img);
-    } else {
-      clearEditPreview();
-    }
+  window._openEdit=function(id,name,date,img,brand){
+    window._editImgBase64=null; window._editImgFile=null;
+    document.getElementById('editId').value=id;
+    document.getElementById('editOldImg').value=img;
+    document.getElementById('editNameInput').value=name;
+    document.getElementById('editDateInput').value=date;
+    document.getElementById('editBrandInput').value=brand||'';
+    document.getElementById('editImgInput').value='';
+    document.getElementById('editUrlInput').value='';
+    window.updateBrandDot('editBrandDotPreview','editBrandInput');
+    if(img){setEditPreview(img);}else{clearEditPreview();}
     openEditSheet();
   };
 
-  // ── SALVAR EDITAR ──
-  window.saveEdit = async function() {
-    const id   = document.getElementById('editId').value;
-    const name = document.getElementById('editNameInput').value.trim();
-    const date = document.getElementById('editDateInput').value;
-    const urlVal = document.getElementById('editUrlInput').value.trim();
-    const oldImg = document.getElementById('editOldImg').value;
-    if (!name) { showToast('⚠️ Informe o nome!'); return; }
-    if (!date) { showToast('⚠️ Informe a data!'); return; }
-    const btn = document.getElementById('btnEditSubmit');
-    btn.disabled = true; btn.textContent = 'Salvando...';
-    try {
-      let imgUrl = oldImg || null;
-      if (urlVal) {
-        imgUrl = urlVal;
-      } else if (window._editImgFile) {
-        try {
-          const ext  = (window._editImgFile.name.split('.').pop() || 'jpg').toLowerCase();
-          const path = `esmaltes/${Date.now()}.${ext}`;
-          const { error: upErr } = await supabase.storage
-            .from('fotos').upload(path, window._editImgFile, {contentType: window._editImgFile.type});
-          imgUrl = upErr
-            ? (window._editImgBase64 || oldImg || null)
-            : supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
-        } catch(e) { imgUrl = window._editImgBase64 || oldImg || null; }
-      } else if (window._editImgBase64) {
-        imgUrl = window._editImgBase64;
-      }
-      const { error } = await supabase.from('esmaltes').update({name, date, img: imgUrl}).eq('id', id);
-      if (error) throw error;
-      closeEditSheet();
-      showToast('✏️ Esmalte atualizado!');
-    } catch(e) {
-      console.error(e);
-      showToast('❌ Erro ao atualizar: ' + (e.message || 'verifique a conexão'));
-    } finally {
-      btn.disabled = false; btn.textContent = '✓ Salvar Alterações';
-    }
+  window.saveEdit=async function(){
+    const id    =document.getElementById('editId').value;
+    const name  =document.getElementById('editNameInput').value.trim();
+    const brand =document.getElementById('editBrandInput').value;
+    const date  =document.getElementById('editDateInput').value;
+    const urlVal=document.getElementById('editUrlInput').value.trim();
+    const oldImg=document.getElementById('editOldImg').value;
+    if(!name){showToast('⚠️ Informe o nome!');return;}
+    if(!date){showToast('⚠️ Informe a data!');return;}
+    const btn=document.getElementById('btnEditSubmit');
+    btn.disabled=true; btn.textContent='Salvando...';
+    try{
+      let imgUrl=oldImg||null;
+      if(urlVal){imgUrl=urlVal;}
+      else if(window._editImgFile){
+        try{
+          const ext=(window._editImgFile.name.split('.').pop()||'jpg').toLowerCase();
+          const path=`esmaltes/${Date.now()}.${ext}`;
+          const {error:upErr}=await supabase.storage.from('fotos').upload(path,window._editImgFile,{contentType:window._editImgFile.type});
+          imgUrl=upErr?(window._editImgBase64||oldImg||null):supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
+        }catch(e){imgUrl=window._editImgBase64||oldImg||null;}
+      }else if(window._editImgBase64){imgUrl=window._editImgBase64;}
+      const {error}=await supabase.from('esmaltes').update({name,brand:brand||null,date,img:imgUrl}).eq('id',id);
+      if(error)throw error;
+      closeEditSheet(); showToast('✦ Atualizado!');
+    }catch(e){ showToast('❌ Erro: '+(e.message||'verifique a conexão')); }
+    finally{ btn.disabled=false; btn.textContent='Salvar Alterações'; }
   };
 
-  // ── DELETAR ──
-  let _delId = null, _delImg = null;
-  window._askDelete = function(id, name, img) {
-    _delId = id; _delImg = img;
-    document.getElementById('modalName').textContent = name;
+  let _delId=null,_delImg=null;
+  window._askDelete=function(id,name,img){
+    _delId=id; _delImg=img;
+    document.getElementById('modalName').textContent=name;
     document.getElementById('modalOverlay').classList.add('open');
   };
-  window.confirmDelete = async function() {
-    if (!_delId) return;
-    try {
-      if (_delImg && _delImg.includes('supabase') && _delImg.includes('/fotos/')) {
-        const part = _delImg.split('/fotos/')[1];
-        if (part) await supabase.storage.from('fotos').remove([part]);
+  window.confirmDelete=async function(){
+    if(!_delId)return;
+    try{
+      if(_delImg&&_delImg.includes('supabase')&&_delImg.includes('/fotos/')){
+        const part=_delImg.split('/fotos/')[1];
+        if(part) await supabase.storage.from('fotos').remove([part]);
       }
-      const { error } = await supabase.from('esmaltes').delete().eq('id', _delId);
-      if (error) throw error;
-      showToast('🗑️ Esmalte removido.');
-    } catch(e) { showToast('❌ Erro ao remover.'); }
-    _delId = _delImg = null;
-    closeModal();
+      const {error}=await supabase.from('esmaltes').delete().eq('id',_delId);
+      if(error)throw error;
+      showToast('🗑️ Removido.');
+    }catch(e){showToast('❌ Erro ao remover.');}
+    _delId=_delImg=null; closeModal();
   };
 </script>
 </body>
