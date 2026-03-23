@@ -8,29 +8,230 @@
   <meta name="theme-color" content="#8c2d45"/>
   <title>Minha Coleção 💅</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css">
+<style>
+:root {
+  --bg: #fdf6f0;
+  --card: #ffffff;
+  --accent: #c0506a;
+  --accent-light: #f7dce3;
+  --accent-dark: #8c2d45;
+  --text: #2a1a1f;
+  --muted: #9b7e88;
+  --border: #f0dde5;
+  --radius: 16px;
+  --shadow: 0 2px 16px rgba(192,80,106,0.10);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overscroll-behavior: none; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  background-image: radial-gradient(circle at 90% 5%, rgba(192,80,106,0.07) 0%, transparent 45%);
+}
+.app-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(253,246,240,0.95);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 20px 14px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.header-row { display: flex; align-items: flex-start; justify-content: space-between; }
+.app-header h1 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--accent-dark); }
+.app-header .subtitle { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.count-badge {
+  background: var(--accent-light); color: var(--accent);
+  font-size: 0.75rem; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+  border: 1px solid rgba(192,80,106,0.2);
+  white-space: nowrap; margin-top: 4px;
+}
+.sync-dot {
+  display: inline-block; width: 7px; height: 7px;
+  border-radius: 50%; margin-right: 5px;
+  background: #ccc; vertical-align: middle;
+}
+.sync-dot.ok      { background: #4caf50; }
+.sync-dot.err     { background: #f44336; }
+.sync-dot.loading { background: #ff9800; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.sync-label { font-size: 0.7rem; color: var(--muted); }
+.main { padding: 16px 16px 120px; min-height: 100vh; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.nail-card {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow); border: 1px solid var(--border);
+  overflow: hidden; position: relative;
+  animation: fadeUp 0.3s ease both; transition: transform 0.1s;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.nail-card:active { transform: scale(0.97); }
+.nail-card .img-wrap {
+  width: 100%; aspect-ratio: 3/4; overflow: hidden;
+  background: var(--accent-light);
+  display: flex; align-items: center; justify-content: center;
+}
+.nail-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.nail-card .img-wrap .no-img { font-size: 2.5rem; opacity: 0.35; }
+.nail-card .info { padding: 10px 12px 12px; }
+.nail-card .name {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.92rem; color: var(--text); margin-bottom: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nail-card .date { font-size: 0.7rem; color: var(--muted); }
+.btn-delete {
+  position: absolute; top: 8px; right: 8px;
+  background: rgba(255,255,255,0.92); border: none; border-radius: 50%;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 0.78rem; color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.btn-delete:active { transform: scale(0.88); }
+.empty-state {
+  text-align: center; padding: 60px 24px;
+  color: var(--muted); grid-column: span 2;
+}
+.empty-state .emoji { font-size: 3.5rem; margin-bottom: 16px; display: block; }
+.empty-state p { font-size: 0.95rem; font-weight: 300; line-height: 1.6; }
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+  margin: 60px auto; grid-column: span 2;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.fab {
+  position: fixed;
+  bottom: calc(var(--safe-bottom) + 24px); right: 20px;
+  z-index: 200; width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #d96b85);
+  color: #fff; font-size: 1.7rem; border: none; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(192,80,106,0.45);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s;
+}
+.fab:active { transform: scale(0.91); }
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(42,26,31,0.45); z-index: 300;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+.sheet {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
+  background: var(--card); border-radius: 24px 24px 0 0;
+  padding: 0 20px calc(28px + var(--safe-bottom));
+  transform: translateY(100%);
+  transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.sheet.open { transform: translateY(0); }
+.sheet-handle {
+  width: 40px; height: 4px; background: var(--border);
+  border-radius: 2px; margin: 14px auto 20px;
+}
+.sheet h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem; color: var(--accent-dark); margin-bottom: 20px;
+}
+.field { margin-bottom: 16px; }
+.field label {
+  display: block; font-size: 0.71rem; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 7px;
+}
+.field input[type="text"],
+.field input[type="date"] {
+  width: 100%; padding: 14px 16px;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-size: 1rem;
+  color: var(--text); background: var(--bg); outline: none;
+  -webkit-appearance: none; appearance: none;
+}
+.field input:focus { border-color: var(--accent); }
+.image-upload-label {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px; width: 100%; height: 130px;
+  border: 2px dashed var(--border); border-radius: 12px;
+  cursor: pointer; background: var(--bg);
+  overflow: hidden; position: relative;
+}
+.image-upload-label:active { border-color: var(--accent); background: var(--accent-light); }
+.image-upload-label .up-icon { font-size: 2rem; }
+.image-upload-label .up-hint { font-size: 0.82rem; color: var(--muted); text-align: center; padding: 0 12px; }
+.image-upload-label img#preview {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: none;
+}
+#imgInput { display: none; }
+.url-divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 12px 0 10px; color: var(--muted); font-size: 0.72rem;
+}
+.url-divider::before, .url-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.btn-submit {
+  width: 100%; padding: 16px;
+  background: linear-gradient(135deg, var(--accent), #d96b85);
+  color: #fff; border: none; border-radius: 14px;
+  font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+  cursor: pointer; margin-top: 8px;
+  box-shadow: 0 4px 16px rgba(192,80,106,0.35);
+}
+.btn-submit:active { opacity: 0.88; transform: scale(0.98); }
+.btn-submit:disabled { opacity: 0.6; }
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(42,26,31,0.5); z-index: 500;
+  display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: var(--card); border-radius: 20px 20px 0 0;
+  padding: 28px 20px calc(24px + var(--safe-bottom)); width: 100%;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.modal-overlay.open .modal-box { transform: translateY(0); }
+.modal-box p { font-size: 1rem; color: var(--text); text-align: center; margin-bottom: 22px; line-height: 1.5; }
+.modal-box p strong { color: var(--accent-dark); }
+.modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn-cancel {
+  padding: 14px; border-radius: 12px;
+  border: 1.5px solid var(--border); background: transparent;
+  font-family: 'DM Sans', sans-serif; font-size: 0.97rem; color: var(--muted); cursor: pointer;
+}
+.btn-confirm-del {
+  padding: 14px; border-radius: 12px; border: none;
+  background: var(--accent); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 0.97rem; font-weight: 600; cursor: pointer;
+}
+#toast {
+  position: fixed;
+  bottom: calc(var(--safe-bottom) + 96px); left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--accent-dark); color: #fff;
+  padding: 11px 24px; border-radius: 30px; font-size: 0.88rem;
+  opacity: 0; transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none; z-index: 999; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (min-width: 600px) {
+  .grid { grid-template-columns: repeat(3, 1fr); }
+  .main { max-width: 700px; margin: 0 auto; }
+}
+</style>
 </head>
 <body>
 
-<!-- ⚙️ BANNER DE CONFIGURAÇÃO -->
-<div id="configBanner">
-  <strong>⚙️ Configure o Supabase para sincronizar entre dispositivos (é grátis!)</strong>
-  <ol>
-    <li>Acesse <a href="https://supabase.com" target="_blank">supabase.com</a> → crie uma conta → crie um projeto</li>
-    <li>No painel vá em <strong>SQL Editor</strong> e execute este comando:<br>
-      <code>create table esmaltes (id uuid primary key default gen_random_uuid(), name text not null, date text, img text, created_at timestamptz default now());</code>
-    </li>
-    <li>Ainda no SQL Editor, libere acesso público:<br>
-      <code>alter table esmaltes enable row level security; create policy "public" on esmaltes for all using (true) with check (true);</code>
-    </li>
-    <li>(Opcional) Para fotos da galeria: vá em <strong>Storage</strong> → crie um bucket chamado <code>fotos</code> → marque como <strong>público</strong></li>
-    <li>Vá em <strong>Project Settings → API</strong> → copie a <strong>Project URL</strong> e a chave <strong>anon public</strong></li>
-    <li>Cole os dois valores no script abaixo substituindo <code>COLE_URL_AQUI</code> e <code>COLE_ANON_KEY_AQUI</code></li>
-  </ol>
-  <button class="close-btn" onclick="document.getElementById('configBanner').style.display='none'">Entendi, fechar ✕</button>
-</div>
-
-<!-- HEADER -->
 <div class="app-header">
   <div class="header-row">
     <div>
@@ -40,29 +241,21 @@
     <span class="count-badge" id="countBadge">0 esmaltes</span>
   </div>
   <div style="margin-top:8px">
-    <span class="sync-dot" id="syncDot"></span>
+    <span class="sync-dot loading" id="syncDot"></span>
     <span class="sync-label" id="syncLabel">Conectando...</span>
   </div>
 </div>
 
-<!-- GRID -->
 <div class="main">
-  <div class="grid" id="grid">
-    <div class="spinner"></div>
-  </div>
+  <div class="grid" id="grid"><div class="spinner"></div></div>
 </div>
 
-<!-- FAB -->
 <button class="fab" onclick="openSheet()" aria-label="Adicionar esmalte">＋</button>
-
-<!-- OVERLAY -->
 <div class="overlay" id="overlay" onclick="closeSheet()"></div>
 
-<!-- BOTTOM SHEET -->
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
   <h2>✦ Adicionar Esmalte</h2>
-
   <div class="field">
     <label>Foto do Esmalte</label>
     <label class="image-upload-label" for="imgInput" id="imgLabel">
@@ -74,21 +267,17 @@
     <div class="url-divider"><span>ou cole a URL da imagem</span></div>
     <input type="text" id="urlInput" placeholder="https://i.pinimg.com/..." oninput="handleUrlInput()" autocomplete="off" autocorrect="off"/>
   </div>
-
   <div class="field">
     <label>Nome do Esmalte</label>
     <input type="text" id="nameInput" placeholder="Ex: Rosa Quartzo" autocomplete="off"/>
   </div>
-
   <div class="field">
     <label>Data de Aquisição</label>
     <input type="date" id="dateInput"/>
   </div>
-
   <button class="btn-submit" id="btnSubmit" onclick="addNail()">＋ Adicionar à Coleção</button>
 </div>
 
-<!-- CONFIRM DELETE -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
     <p>Remover <strong id="modalName"></strong> da sua coleção?</p>
@@ -101,184 +290,20 @@
 
 <div id="toast"></div>
 
-<!-- ════════════════════════════════════════════
-     SUPABASE — banco de dados na nuvem
-     Sincroniza entre todos os dispositivos
-     em tempo real, grátis até 500MB
-     ════════════════════════════════════════════ -->
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+<!-- UI helpers — acesso global -->
+<script>
+  window._today = new Date().toISOString().split('T')[0];
+  document.getElementById('dateInput').value = window._today;
+  window._imgBase64 = null;
+  window._imgFile   = null;
 
-  // ================================================================
-  //  🔧 COLE SUAS CREDENCIAIS DO SUPABASE AQUI
-  // ================================================================
-  const SUPABASE_URL      = 'https://irkintnlpyryynewafer.supabase.co';       // ex: https://abcdef.supabase.co
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlya2ludG5scHlyeXluZXdhZmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzU5MzgsImV4cCI6MjA4OTg1MTkzOH0.SE1bzdRRaHwGFXk2PyiPDBoAudS9kbAAL5xWWIvkeyQ';  // chave "anon public"
-  // ================================================================
-
-  const isConfigured = !SUPABASE_URL.includes('COLE_') && !SUPABASE_ANON_KEY.includes('COLE_');
-
-  if (!isConfigured) {
-    document.getElementById('configBanner').style.display = 'block';
-    setSyncStatus('err', 'Não configurado');
-    renderGrid([]);
-    return; // para a execução do módulo
-  }
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // ── CARREGA E ESCUTA EM TEMPO REAL ──
-  async function startSync() {
-    setSyncStatus('loading', 'Conectando...');
-    await fetchItems();
-
-    supabase
-      .channel('esmaltes-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'esmaltes' }, fetchItems)
-      .subscribe(status => {
-        if (status === 'SUBSCRIBED')   setSyncStatus('ok',  'Sincronizado em tempo real ✓');
-        if (status === 'CHANNEL_ERROR') setSyncStatus('err', 'Erro de conexão');
-      });
-  }
-
-  async function fetchItems() {
-    const { data, error } = await supabase
-      .from('esmaltes')
-      .select('*')
-      .order('date', { ascending: true });
-
-    if (error) { console.error(error); setSyncStatus('err', 'Erro ao carregar'); return; }
-    renderGrid(data || []);
-    setSyncStatus('ok', 'Sincronizado ✓');
-  }
-
-  startSync();
-
-  // ── ADICIONAR ──
-  window.addNail = async function() {
-    const name = document.getElementById('nameInput').value.trim();
-    const date = document.getElementById('dateInput').value;
-    const url  = document.getElementById('urlInput').value.trim();
-
-    if (!name) { showToast('⚠️ Informe o nome do esmalte!'); return; }
-    if (!date) { showToast('⚠️ Informe a data!'); return; }
-
-    const btn = document.getElementById('btnSubmit');
-    btn.disabled = true; btn.textContent = 'Salvando...';
-
-    try {
-      let imgUrl = url || null;
-
-      // Upload de foto para o Supabase Storage (bucket "fotos")
-      if (window._imgFile) {
-        const ext  = (window._imgFile.name.split('.').pop() || 'jpg').toLowerCase();
-        const path = `esmaltes/${Date.now()}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from('fotos')
-          .upload(path, window._imgFile, { contentType: window._imgFile.type });
-
-        if (upErr) {
-          // Bucket não criado? Usa base64 como fallback (só neste dispositivo)
-          imgUrl = window._imgBase64 || url || null;
-        } else {
-          imgUrl = supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
-        }
-      }
-
-      const { error } = await supabase.from('esmaltes').insert([{ name, date, img: imgUrl }]);
-      if (error) throw error;
-
-      document.getElementById('nameInput').value = '';
-      document.getElementById('dateInput').value = today;
-      document.getElementById('imgInput').value  = '';
-      document.getElementById('urlInput').value  = '';
-      clearPreview();
-      window._imgBase64 = null;
-      window._imgFile   = null;
-
-      closeSheet();
-      showToast('✅ Esmalte adicionado!');
-    } catch(e) {
-      console.error(e);
-      showToast('❌ Erro ao salvar. Verifique as credenciais.');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '＋ Adicionar à Coleção';
-    }
+  window.openSheet  = () => {
+    document.getElementById('sheet').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
   };
-
-  // ── DELETAR ──
-  let pendingDeleteId  = null;
-  let pendingDeleteImg = null;
-
-  window.askDelete = function(id, name, img) {
-    pendingDeleteId  = id;
-    pendingDeleteImg = img;
-    document.getElementById('modalName').textContent = name;
-    document.getElementById('modalOverlay').classList.add('open');
-  };
-
-  window.confirmDelete = async function() {
-    if (!pendingDeleteId) return;
-    try {
-      if (pendingDeleteImg && pendingDeleteImg.includes('supabase')) {
-        const path = pendingDeleteImg.split('/fotos/')[1];
-        if (path) await supabase.storage.from('fotos').remove([path]);
-      }
-      const { error } = await supabase.from('esmaltes').delete().eq('id', pendingDeleteId);
-      if (error) throw error;
-      showToast('🗑️ Esmalte removido.');
-    } catch(e) {
-      showToast('❌ Erro ao remover.');
-    }
-    closeModal();
-    pendingDeleteId = pendingDeleteImg = null;
-  };
-
-  // ── RENDERIZAR ──
-  function renderGrid(items) {
-    const grid  = document.getElementById('grid');
-    const badge = document.getElementById('countBadge');
-    badge.textContent = `${items.length} esmalte${items.length !== 1 ? 's' : ''}`;
-
-    if (items.length === 0) {
-      grid.innerHTML = `
-        <div class="empty-state">
-          <span class="emoji">🧴</span>
-          <p>Sua coleção está vazia.<br>Toque no <strong style="color:var(--accent)">＋</strong> para adicionar!</p>
-        </div>`;
-      return;
-    }
-
-    grid.innerHTML = items.map(n => `
-      <div class="nail-card">
-        <div class="img-wrap">
-          ${n.img
-            ? `<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" loading="lazy"/>`
-            : `<span class="no-img">🧴</span>`}
-        </div>
-        <div class="info">
-          <div class="name">${escHtml(n.name)}</div>
-          <div class="date">${formatDate(n.date)}</div>
-        </div>
-        <button class="btn-delete" onclick="askDelete('${n.id}','${escAttr(n.name)}','${escAttr(n.img||'')}')">✕</button>
-      </div>
-    `).join('');
-  }
-
-  // ── HELPERS ──
-  function setSyncStatus(state, label) {
-    document.getElementById('syncDot').className = `sync-dot ${state}`;
-    document.getElementById('syncLabel').textContent = label;
-  }
-  function escHtml(s) {
-    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-  function escAttr(s) { return (s||'').replace(/'/g,"\\'"); }
-  window.formatDate = d => {
-    if (!d) return '';
-    const [y,m,day] = d.split('-');
-    return `${day}/${m}/${y}`;
+  window.closeSheet = () => {
+    document.getElementById('sheet').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
   };
   window.showToast = function(msg) {
     const t = document.getElementById('toast');
@@ -286,26 +311,7 @@
     setTimeout(() => t.classList.remove('show'), 2600);
   };
   window.closeModal = function() {
-    pendingDeleteId = null;
     document.getElementById('modalOverlay').classList.remove('open');
-  };
-</script>
-
-<script>
-  // ── UI helpers ──
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('dateInput').value = today;
-
-  window._imgBase64 = null;
-  window._imgFile   = null;
-
-  window.openSheet = () => {
-    document.getElementById('sheet').classList.add('open');
-    document.getElementById('overlay').classList.add('open');
-  };
-  window.closeSheet = () => {
-    document.getElementById('sheet').classList.remove('open');
-    document.getElementById('overlay').classList.remove('open');
   };
 
   function setPreview(src) {
@@ -324,25 +330,44 @@
   document.getElementById('imgInput').addEventListener('change', function() {
     const file = this.files[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('⚠️ Selecione uma imagem válida.'); this.value = ''; return;
+    }
     document.getElementById('urlInput').value = '';
     window._imgFile = file;
     window._imgBase64 = null;
 
+    // Preview imediato
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+
+    // Comprime para base64 (fallback quando Storage não existe)
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
       img.onload = () => {
-        const MAX = 900;
-        let w = img.width, h = img.height;
-        if (w > h && w > MAX) { h = Math.round(h*MAX/w); w = MAX; }
-        else if (h > MAX)     { w = Math.round(w*MAX/h); h = MAX; }
-        const cv = document.createElement('canvas');
-        cv.width = w; cv.height = h;
-        cv.getContext('2d').drawImage(img, 0, 0, w, h);
-        window._imgBase64 = cv.toDataURL('image/jpeg', 0.78);
-        setPreview(window._imgBase64);
+        try {
+          const MAX = 900;
+          let w = img.width, h = img.height;
+          if (w > h && w > MAX) { h = Math.round(h*MAX/w); w = MAX; }
+          else if (h > MAX)     { w = Math.round(w*MAX/h); h = MAX; }
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          cv.getContext('2d').drawImage(img, 0, 0, w, h);
+          window._imgBase64 = cv.toDataURL('image/jpeg', 0.78);
+          URL.revokeObjectURL(objectUrl);
+          setPreview(window._imgBase64);
+        } catch(err) { /* mantém objectUrl */ }
+      };
+      img.onerror = () => {
+        showToast('⚠️ Erro ao carregar imagem.');
+        window._imgFile = null; clearPreview();
       };
       img.src = e.target.result;
+    };
+    reader.onerror = () => {
+      showToast('⚠️ Erro ao ler arquivo.');
+      window._imgFile = null; clearPreview();
     };
     reader.readAsDataURL(file);
   });
@@ -350,17 +375,168 @@
   window.handleUrlInput = () => {
     const url = document.getElementById('urlInput').value.trim();
     document.getElementById('imgInput').value = '';
-    window._imgBase64 = null;
-    window._imgFile   = null;
+    window._imgBase64 = null; window._imgFile = null;
     url ? setPreview(url) : clearPreview();
   };
 
-  let startY = 0;
-  const sheet = document.getElementById('sheet');
-  sheet.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
-  sheet.addEventListener('touchend',   e => {
-    if (e.changedTouches[0].clientY - startY > 80) closeSheet();
-  }, { passive: true });
+  // Swipe para fechar sheet
+  let _startY = 0;
+  const _sheet = document.getElementById('sheet');
+  _sheet.addEventListener('touchstart', e => { _startY = e.touches[0].clientY; }, {passive:true});
+  _sheet.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - _startY > 80) closeSheet(); }, {passive:true});
+</script>
+
+<!-- Supabase em module isolado -->
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const SUPABASE_URL      = 'https://irkintnlpyryynewafer.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlya2ludG5scHlyeXluZXdhZmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzU5MzgsImV4cCI6MjA4OTg1MTkzOH0.SE1bzdRRaHwGFXk2PyiPDBoAudS9kbAAL5xWWIvkeyQ';
+
+  function setSyncStatus(state, label) {
+    document.getElementById('syncDot').className = `sync-dot ${state}`;
+    document.getElementById('syncLabel').textContent = label;
+  }
+  function escHtml(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function escAttr(s) { return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+  function fmtDate(d) {
+    if (!d) return '';
+    const [y,m,day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  }
+
+  function renderGrid(items) {
+    const grid = document.getElementById('grid');
+    document.getElementById('countBadge').textContent =
+      `${items.length} esmalte${items.length !== 1 ? 's' : ''}`;
+    if (!items.length) {
+      grid.innerHTML = `<div class="empty-state">
+        <span class="emoji">🧴</span>
+        <p>Sua coleção está vazia.<br>Toque no <strong style="color:var(--accent)">＋</strong> para adicionar!</p>
+      </div>`;
+      return;
+    }
+    grid.innerHTML = items.map(n => `
+      <div class="nail-card">
+        <div class="img-wrap">
+          ${n.img
+            ? `<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" loading="lazy"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+               <span class="no-img" style="display:none">🧴</span>`
+            : `<span class="no-img">🧴</span>`}
+        </div>
+        <div class="info">
+          <div class="name">${escHtml(n.name)}</div>
+          <div class="date">${fmtDate(n.date)}</div>
+        </div>
+        <button class="btn-delete"
+          onclick="window._askDelete('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.img||'')}')">✕</button>
+      </div>`).join('');
+  }
+
+  let supabase;
+  try { supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+  catch(e) { setSyncStatus('err', 'Erro ao inicializar'); renderGrid([]); throw e; }
+
+  async function fetchItems() {
+    const { data, error } = await supabase
+      .from('esmaltes').select('*').order('date', {ascending: true});
+    if (error) { console.error(error); setSyncStatus('err', 'Erro ao carregar'); renderGrid([]); return; }
+    renderGrid(Array.isArray(data) ? data : []);
+    setSyncStatus('ok', 'Sincronizado ✓');
+  }
+
+  // Timeout de segurança: 8s
+  const loadTimeout = setTimeout(() => {
+    setSyncStatus('err', 'Tempo esgotado — verifique conexão');
+    renderGrid([]);
+  }, 8000);
+
+  fetchItems()
+    .then(() => clearTimeout(loadTimeout))
+    .catch(() => { clearTimeout(loadTimeout); setSyncStatus('err', 'Sem conexão'); renderGrid([]); });
+
+  // Realtime
+  try {
+    supabase.channel('esmaltes-rt')
+      .on('postgres_changes', {event:'*', schema:'public', table:'esmaltes'}, () => fetchItems())
+      .subscribe(s => {
+        if (s === 'SUBSCRIBED')    setSyncStatus('ok',  'Sincronizado em tempo real ✓');
+        if (s === 'CHANNEL_ERROR') setSyncStatus('err', 'Erro tempo real');
+      });
+  } catch(e) { /* realtime é opcional */ }
+
+  // ── ADICIONAR ──
+  window.addNail = async function() {
+    const name = document.getElementById('nameInput').value.trim();
+    const date = document.getElementById('dateInput').value;
+    const url  = document.getElementById('urlInput').value.trim();
+    if (!name) { showToast('⚠️ Informe o nome do esmalte!'); return; }
+    if (!date) { showToast('⚠️ Informe a data!'); return; }
+
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true; btn.textContent = 'Salvando...';
+    try {
+      let imgUrl = url || null;
+
+      if (window._imgFile) {
+        try {
+          const ext  = (window._imgFile.name.split('.').pop() || 'jpg').toLowerCase();
+          const path = `esmaltes/${Date.now()}.${ext}`;
+          const { error: upErr } = await supabase.storage
+            .from('fotos')
+            .upload(path, window._imgFile, {contentType: window._imgFile.type});
+          imgUrl = upErr
+            ? (window._imgBase64 || null)   // fallback: base64 comprimida
+            : supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
+        } catch(e) {
+          imgUrl = window._imgBase64 || null;
+        }
+      }
+
+      const { error } = await supabase.from('esmaltes').insert([{name, date, img: imgUrl}]);
+      if (error) throw error;
+
+      document.getElementById('nameInput').value = '';
+      document.getElementById('dateInput').value = window._today;
+      document.getElementById('imgInput').value  = '';
+      document.getElementById('urlInput').value  = '';
+      clearPreview();
+      window._imgBase64 = null; window._imgFile = null;
+      closeSheet();
+      showToast('✅ Esmalte adicionado!');
+    } catch(e) {
+      console.error(e);
+      showToast('❌ Erro ao salvar: ' + (e.message || 'verifique a conexão'));
+    } finally {
+      btn.disabled = false; btn.textContent = '＋ Adicionar à Coleção';
+    }
+  };
+
+  // ── DELETAR ──
+  let _delId = null, _delImg = null;
+
+  window._askDelete = function(id, name, img) {
+    _delId = id; _delImg = img;
+    document.getElementById('modalName').textContent = name;
+    document.getElementById('modalOverlay').classList.add('open');
+  };
+  window.confirmDelete = async function() {
+    if (!_delId) return;
+    try {
+      if (_delImg && _delImg.includes('supabase') && _delImg.includes('/fotos/')) {
+        const part = _delImg.split('/fotos/')[1];
+        if (part) await supabase.storage.from('fotos').remove([part]);
+      }
+      const { error } = await supabase.from('esmaltes').delete().eq('id', _delId);
+      if (error) throw error;
+      showToast('🗑️ Esmalte removido.');
+    } catch(e) { showToast('❌ Erro ao remover.'); }
+    _delId = _delImg = null;
+    closeModal();
+  };
 </script>
 </body>
 </html>
