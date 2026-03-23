@@ -12,11 +12,22 @@
 </head>
 <body>
 
-<!-- CONFIG BANNER (aparece se não configurar o Firebase) -->
+<!-- ⚙️ BANNER DE CONFIGURAÇÃO -->
 <div id="configBanner">
-  <strong>⚙️ Configure o Firebase para salvar na nuvem</strong>
-  Substitua as credenciais no topo do &lt;script&gt; no arquivo. 
-  <a href="#" onclick="document.getElementById('configBanner').style.display='none'">Fechar</a>
+  <strong>⚙️ Configure o Supabase para sincronizar entre dispositivos (é grátis!)</strong>
+  <ol>
+    <li>Acesse <a href="https://supabase.com" target="_blank">supabase.com</a> → crie uma conta → crie um projeto</li>
+    <li>No painel vá em <strong>SQL Editor</strong> e execute este comando:<br>
+      <code>create table esmaltes (id uuid primary key default gen_random_uuid(), name text not null, date text, img text, created_at timestamptz default now());</code>
+    </li>
+    <li>Ainda no SQL Editor, libere acesso público:<br>
+      <code>alter table esmaltes enable row level security; create policy "public" on esmaltes for all using (true) with check (true);</code>
+    </li>
+    <li>(Opcional) Para fotos da galeria: vá em <strong>Storage</strong> → crie um bucket chamado <code>fotos</code> → marque como <strong>público</strong></li>
+    <li>Vá em <strong>Project Settings → API</strong> → copie a <strong>Project URL</strong> e a chave <strong>anon public</strong></li>
+    <li>Cole os dois valores no script abaixo substituindo <code>COLE_URL_AQUI</code> e <code>COLE_ANON_KEY_AQUI</code></li>
+  </ol>
+  <button class="close-btn" onclick="document.getElementById('configBanner').style.display='none'">Entendi, fechar ✕</button>
 </div>
 
 <!-- HEADER -->
@@ -90,61 +101,60 @@
 
 <div id="toast"></div>
 
-<!-- Firebase SDK -->
+<!-- ════════════════════════════════════════════
+     SUPABASE — banco de dados na nuvem
+     Sincroniza entre todos os dispositivos
+     em tempo real, grátis até 500MB
+     ════════════════════════════════════════════ -->
 <script type="module">
- 
-  const firebaseConfig = {
-  apiKey: "AIzaSyCS1mcYV2JhwZfcO9x9ae0ThzYreFJFEDQ",
-  authDomain: "esmaltes-por-data-validade.firebaseapp.com",
-  projectId: "esmaltes-por-data-validade",
-  storageBucket: "esmaltes-por-data-validade.firebasestorage.app",
-  messagingSenderId: "550854465247",
-  appId: "1:550854465247:web:aa0060fcd5f28190c93b6a",
-  measurementId: "G-XHY7HQKSF7"
-};
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-  import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc,
-           deleteDoc, doc, onSnapshot,
-           orderBy, query }                         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getStorage, ref, uploadString,
-           getDownloadURL, deleteObject }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+  // ================================================================
+  //  🔧 COLE SUAS CREDENCIAIS DO SUPABASE AQUI
+  // ================================================================
+  const SUPABASE_URL      = 'sb_publishable_xdfWEf9jcB55SxOCS66J8g_kf3cGGY9';       // ex: https://abcdef.supabase.co
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlya2ludG5scHlyeXluZXdhZmVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzU5MzgsImV4cCI6MjA4OTg1MTkzOH0.SE1bzdRRaHwGFXk2PyiPDBoAudS9kbAAL5xWWIvkeyQ';  // chave "anon public"
+  // ================================================================
 
-  // Verifica se ainda está com os valores padrão
-  const isConfigured = firebaseConfig.apiKey !== "COLE_AQUI";
+  const isConfigured = !SUPABASE_URL.includes('COLE_') && !SUPABASE_ANON_KEY.includes('COLE_');
+
   if (!isConfigured) {
     document.getElementById('configBanner').style.display = 'block';
     setSyncStatus('err', 'Não configurado');
     renderGrid([]);
+    return; // para a execução do módulo
   }
 
-  let app, db, storage;
-  if (isConfigured) {
-    app     = initializeApp(firebaseConfig);
-    db      = getFirestore(app);
-    storage = getStorage(app);
-    startListener();
-  }
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ── REALTIME LISTENER ──
-  function startListener() {
+  // ── CARREGA E ESCUTA EM TEMPO REAL ──
+  async function startSync() {
     setSyncStatus('loading', 'Conectando...');
-    const q = query(collection(db, 'esmaltes'), orderBy('date', 'asc'));
-    onSnapshot(q,
-      snapshot => {
-        const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderGrid(items);
-        setSyncStatus('ok', 'Sincronizado ✓');
-      },
-      err => {
-        console.error(err);
-        setSyncStatus('err', 'Erro de conexão');
-        showToast('⚠️ Erro ao conectar. Verifique as credenciais.');
-      }
-    );
+    await fetchItems();
+
+    supabase
+      .channel('esmaltes-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'esmaltes' }, fetchItems)
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED')   setSyncStatus('ok',  'Sincronizado em tempo real ✓');
+        if (status === 'CHANNEL_ERROR') setSyncStatus('err', 'Erro de conexão');
+      });
   }
 
-  // ── ADD ──
+  async function fetchItems() {
+    const { data, error } = await supabase
+      .from('esmaltes')
+      .select('*')
+      .order('date', { ascending: true });
+
+    if (error) { console.error(error); setSyncStatus('err', 'Erro ao carregar'); return; }
+    renderGrid(data || []);
+    setSyncStatus('ok', 'Sincronizado ✓');
+  }
+
+  startSync();
+
+  // ── ADICIONAR ──
   window.addNail = async function() {
     const name = document.getElementById('nameInput').value.trim();
     const date = document.getElementById('dateInput').value;
@@ -152,46 +162,54 @@
 
     if (!name) { showToast('⚠️ Informe o nome do esmalte!'); return; }
     if (!date) { showToast('⚠️ Informe a data!'); return; }
-    if (!isConfigured) { showToast('⚠️ Configure o Firebase primeiro!'); return; }
 
     const btn = document.getElementById('btnSubmit');
-    btn.disabled = true;
-    btn.textContent = 'Salvando...';
+    btn.disabled = true; btn.textContent = 'Salvando...';
 
     try {
       let imgUrl = url || null;
 
-      // Se tiver upload de arquivo, sobe para o Storage
-      if (window._imgBase64) {
-        const storageRef = ref(storage, `esmaltes/${Date.now()}.jpg`);
-        await uploadString(storageRef, window._imgBase64, 'data_url');
-        imgUrl = await getDownloadURL(storageRef);
+      // Upload de foto para o Supabase Storage (bucket "fotos")
+      if (window._imgFile) {
+        const ext  = (window._imgFile.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = `esmaltes/${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from('fotos')
+          .upload(path, window._imgFile, { contentType: window._imgFile.type });
+
+        if (upErr) {
+          // Bucket não criado? Usa base64 como fallback (só neste dispositivo)
+          imgUrl = window._imgBase64 || url || null;
+        } else {
+          imgUrl = supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
+        }
       }
 
-      await addDoc(collection(db, 'esmaltes'), { name, date, img: imgUrl });
+      const { error } = await supabase.from('esmaltes').insert([{ name, date, img: imgUrl }]);
+      if (error) throw error;
 
-      // Reset form
       document.getElementById('nameInput').value = '';
       document.getElementById('dateInput').value = today;
-      document.getElementById('imgInput').value = '';
-      document.getElementById('urlInput').value = '';
+      document.getElementById('imgInput').value  = '';
+      document.getElementById('urlInput').value  = '';
       clearPreview();
       window._imgBase64 = null;
+      window._imgFile   = null;
 
       closeSheet();
       showToast('✅ Esmalte adicionado!');
     } catch(e) {
       console.error(e);
-      showToast('❌ Erro ao salvar. Tente novamente.');
+      showToast('❌ Erro ao salvar. Verifique as credenciais.');
     } finally {
       btn.disabled = false;
       btn.textContent = '＋ Adicionar à Coleção';
     }
   };
 
-  // ── DELETE ──
-  let pendingDeleteId   = null;
-  let pendingDeleteImg  = null;
+  // ── DELETAR ──
+  let pendingDeleteId  = null;
+  let pendingDeleteImg = null;
 
   window.askDelete = function(id, name, img) {
     pendingDeleteId  = id;
@@ -203,11 +221,12 @@
   window.confirmDelete = async function() {
     if (!pendingDeleteId) return;
     try {
-      // Remove imagem do Storage (se for do Firebase)
-      if (pendingDeleteImg && pendingDeleteImg.includes('firebasestorage')) {
-        try { await deleteObject(ref(storage, pendingDeleteImg)); } catch(_) {}
+      if (pendingDeleteImg && pendingDeleteImg.includes('supabase')) {
+        const path = pendingDeleteImg.split('/fotos/')[1];
+        if (path) await supabase.storage.from('fotos').remove([path]);
       }
-      await deleteDoc(doc(db, 'esmaltes', pendingDeleteId));
+      const { error } = await supabase.from('esmaltes').delete().eq('id', pendingDeleteId);
+      if (error) throw error;
       showToast('🗑️ Esmalte removido.');
     } catch(e) {
       showToast('❌ Erro ao remover.');
@@ -216,7 +235,7 @@
     pendingDeleteId = pendingDeleteImg = null;
   };
 
-  // ── RENDER ──
+  // ── RENDERIZAR ──
   function renderGrid(items) {
     const grid  = document.getElementById('grid');
     const badge = document.getElementById('countBadge');
@@ -235,38 +254,37 @@
       <div class="nail-card">
         <div class="img-wrap">
           ${n.img
-            ? `<img src="${n.img}" alt="${n.name}" loading="lazy"/>`
+            ? `<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" loading="lazy"/>`
             : `<span class="no-img">🧴</span>`}
         </div>
         <div class="info">
-          <div class="name">${n.name}</div>
+          <div class="name">${escHtml(n.name)}</div>
           <div class="date">${formatDate(n.date)}</div>
         </div>
-        <button class="btn-delete" onclick="askDelete('${n.id}', '${(n.name||'').replace(/'/g,"\\'")}', '${n.img||''}')">✕</button>
+        <button class="btn-delete" onclick="askDelete('${n.id}','${escAttr(n.name)}','${escAttr(n.img||'')}')">✕</button>
       </div>
     `).join('');
   }
 
   // ── HELPERS ──
   function setSyncStatus(state, label) {
-    const dot = document.getElementById('syncDot');
-    dot.className = `sync-dot ${state}`;
+    document.getElementById('syncDot').className = `sync-dot ${state}`;
     document.getElementById('syncLabel').textContent = label;
   }
-
-  window.showToast = function(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2600);
-  };
-
-  window.formatDate = function(d) {
+  function escHtml(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function escAttr(s) { return (s||'').replace(/'/g,"\\'"); }
+  window.formatDate = d => {
     if (!d) return '';
-    const [y, m, day] = d.split('-');
+    const [y,m,day] = d.split('-');
     return `${day}/${m}/${y}`;
   };
-
+  window.showToast = function(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  };
   window.closeModal = function() {
     pendingDeleteId = null;
     document.getElementById('modalOverlay').classList.remove('open');
@@ -274,23 +292,21 @@
 </script>
 
 <script>
-  // Código não-module (UI helpers)
+  // ── UI helpers ──
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('dateInput').value = today;
 
   window._imgBase64 = null;
+  window._imgFile   = null;
 
-  function openSheet() {
+  window.openSheet = () => {
     document.getElementById('sheet').classList.add('open');
     document.getElementById('overlay').classList.add('open');
-  }
-  window.openSheet = openSheet;
-
-  function closeSheet() {
+  };
+  window.closeSheet = () => {
     document.getElementById('sheet').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
-  }
-  window.closeSheet = closeSheet;
+  };
 
   function setPreview(src) {
     const p = document.getElementById('preview');
@@ -298,37 +314,51 @@
     document.querySelector('#imgLabel .up-icon').style.display = 'none';
     document.getElementById('uploadHint').style.display = 'none';
   }
-
-  function clearPreview() {
+  window.clearPreview = () => {
     const p = document.getElementById('preview');
     p.src = ''; p.style.display = 'none';
     document.querySelector('#imgLabel .up-icon').style.display = '';
     document.getElementById('uploadHint').style.display = '';
-  }
-  window.clearPreview = clearPreview;
+  };
 
   document.getElementById('imgInput').addEventListener('change', function() {
     const file = this.files[0];
     if (!file) return;
     document.getElementById('urlInput').value = '';
+    window._imgFile = file;
     window._imgBase64 = null;
-    const r = new FileReader();
-    r.onload = e => { window._imgBase64 = e.target.result; setPreview(window._imgBase64); };
-    r.readAsDataURL(file);
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 900;
+        let w = img.width, h = img.height;
+        if (w > h && w > MAX) { h = Math.round(h*MAX/w); w = MAX; }
+        else if (h > MAX)     { w = Math.round(w*MAX/h); h = MAX; }
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        window._imgBase64 = cv.toDataURL('image/jpeg', 0.78);
+        setPreview(window._imgBase64);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   });
 
-  window.handleUrlInput = function() {
+  window.handleUrlInput = () => {
     const url = document.getElementById('urlInput').value.trim();
     document.getElementById('imgInput').value = '';
     window._imgBase64 = null;
+    window._imgFile   = null;
     url ? setPreview(url) : clearPreview();
   };
 
-  // Swipe down to close sheet
   let startY = 0;
   const sheet = document.getElementById('sheet');
   sheet.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
-  sheet.addEventListener('touchend', e => {
+  sheet.addEventListener('touchend',   e => {
     if (e.changedTouches[0].clientY - startY > 80) closeSheet();
   }, { passive: true });
 </script>
