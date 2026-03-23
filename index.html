@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#8c2d45"/>
+  <title>Minha Coleção 💅</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- CONFIG BANNER (aparece se não configurar o Firebase) -->
+<div id="configBanner">
+  <strong>⚙️ Configure o Firebase para salvar na nuvem</strong>
+  Substitua as credenciais no topo do &lt;script&gt; no arquivo. 
+  <a href="#" onclick="document.getElementById('configBanner').style.display='none'">Fechar</a>
+</div>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-row">
+    <div>
+      <h1>💅 Minha Coleção</h1>
+      <div class="subtitle">de esmaltes</div>
+    </div>
+    <span class="count-badge" id="countBadge">0 esmaltes</span>
+  </div>
+  <div style="margin-top:8px">
+    <span class="sync-dot" id="syncDot"></span>
+    <span class="sync-label" id="syncLabel">Conectando...</span>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="main">
+  <div class="grid" id="grid">
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" onclick="openSheet()" aria-label="Adicionar esmalte">＋</button>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<!-- BOTTOM SHEET -->
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <h2>✦ Adicionar Esmalte</h2>
+
+  <div class="field">
+    <label>Foto do Esmalte</label>
+    <label class="image-upload-label" for="imgInput" id="imgLabel">
+      <span class="up-icon">📷</span>
+      <span class="up-hint" id="uploadHint">Toque para escolher da galeria</span>
+      <img id="preview" alt="preview"/>
+    </label>
+    <input type="file" id="imgInput" accept="image/*"/>
+    <div class="url-divider"><span>ou cole a URL da imagem</span></div>
+    <input type="text" id="urlInput" placeholder="https://i.pinimg.com/..." oninput="handleUrlInput()" autocomplete="off" autocorrect="off"/>
+  </div>
+
+  <div class="field">
+    <label>Nome do Esmalte</label>
+    <input type="text" id="nameInput" placeholder="Ex: Rosa Quartzo" autocomplete="off"/>
+  </div>
+
+  <div class="field">
+    <label>Data de Aquisição</label>
+    <input type="date" id="dateInput"/>
+  </div>
+
+  <button class="btn-submit" id="btnSubmit" onclick="addNail()">＋ Adicionar à Coleção</button>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <p>Remover <strong id="modalName"></strong> da sua coleção?</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm-del" onclick="confirmDelete()">Remover</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Firebase SDK -->
+<script type="module">
+ 
+  const firebaseConfig = {
+  apiKey: "AIzaSyCS1mcYV2JhwZfcO9x9ae0ThzYreFJFEDQ",
+  authDomain: "esmaltes-por-data-validade.firebaseapp.com",
+  projectId: "esmaltes-por-data-validade",
+  storageBucket: "esmaltes-por-data-validade.firebasestorage.app",
+  messagingSenderId: "550854465247",
+  appId: "1:550854465247:web:aa0060fcd5f28190c93b6a",
+  measurementId: "G-XHY7HQKSF7"
+};
+
+  import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc,
+           deleteDoc, doc, onSnapshot,
+           orderBy, query }                         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getStorage, ref, uploadString,
+           getDownloadURL, deleteObject }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  // Verifica se ainda está com os valores padrão
+  const isConfigured = firebaseConfig.apiKey !== "COLE_AQUI";
+  if (!isConfigured) {
+    document.getElementById('configBanner').style.display = 'block';
+    setSyncStatus('err', 'Não configurado');
+    renderGrid([]);
+  }
+
+  let app, db, storage;
+  if (isConfigured) {
+    app     = initializeApp(firebaseConfig);
+    db      = getFirestore(app);
+    storage = getStorage(app);
+    startListener();
+  }
+
+  // ── REALTIME LISTENER ──
+  function startListener() {
+    setSyncStatus('loading', 'Conectando...');
+    const q = query(collection(db, 'esmaltes'), orderBy('date', 'asc'));
+    onSnapshot(q,
+      snapshot => {
+        const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderGrid(items);
+        setSyncStatus('ok', 'Sincronizado ✓');
+      },
+      err => {
+        console.error(err);
+        setSyncStatus('err', 'Erro de conexão');
+        showToast('⚠️ Erro ao conectar. Verifique as credenciais.');
+      }
+    );
+  }
+
+  // ── ADD ──
+  window.addNail = async function() {
+    const name = document.getElementById('nameInput').value.trim();
+    const date = document.getElementById('dateInput').value;
+    const url  = document.getElementById('urlInput').value.trim();
+
+    if (!name) { showToast('⚠️ Informe o nome do esmalte!'); return; }
+    if (!date) { showToast('⚠️ Informe a data!'); return; }
+    if (!isConfigured) { showToast('⚠️ Configure o Firebase primeiro!'); return; }
+
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+
+    try {
+      let imgUrl = url || null;
+
+      // Se tiver upload de arquivo, sobe para o Storage
+      if (window._imgBase64) {
+        const storageRef = ref(storage, `esmaltes/${Date.now()}.jpg`);
+        await uploadString(storageRef, window._imgBase64, 'data_url');
+        imgUrl = await getDownloadURL(storageRef);
+      }
+
+      await addDoc(collection(db, 'esmaltes'), { name, date, img: imgUrl });
+
+      // Reset form
+      document.getElementById('nameInput').value = '';
+      document.getElementById('dateInput').value = today;
+      document.getElementById('imgInput').value = '';
+      document.getElementById('urlInput').value = '';
+      clearPreview();
+      window._imgBase64 = null;
+
+      closeSheet();
+      showToast('✅ Esmalte adicionado!');
+    } catch(e) {
+      console.error(e);
+      showToast('❌ Erro ao salvar. Tente novamente.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '＋ Adicionar à Coleção';
+    }
+  };
+
+  // ── DELETE ──
+  let pendingDeleteId   = null;
+  let pendingDeleteImg  = null;
+
+  window.askDelete = function(id, name, img) {
+    pendingDeleteId  = id;
+    pendingDeleteImg = img;
+    document.getElementById('modalName').textContent = name;
+    document.getElementById('modalOverlay').classList.add('open');
+  };
+
+  window.confirmDelete = async function() {
+    if (!pendingDeleteId) return;
+    try {
+      // Remove imagem do Storage (se for do Firebase)
+      if (pendingDeleteImg && pendingDeleteImg.includes('firebasestorage')) {
+        try { await deleteObject(ref(storage, pendingDeleteImg)); } catch(_) {}
+      }
+      await deleteDoc(doc(db, 'esmaltes', pendingDeleteId));
+      showToast('🗑️ Esmalte removido.');
+    } catch(e) {
+      showToast('❌ Erro ao remover.');
+    }
+    closeModal();
+    pendingDeleteId = pendingDeleteImg = null;
+  };
+
+  // ── RENDER ──
+  function renderGrid(items) {
+    const grid  = document.getElementById('grid');
+    const badge = document.getElementById('countBadge');
+    badge.textContent = `${items.length} esmalte${items.length !== 1 ? 's' : ''}`;
+
+    if (items.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <span class="emoji">🧴</span>
+          <p>Sua coleção está vazia.<br>Toque no <strong style="color:var(--accent)">＋</strong> para adicionar!</p>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = items.map(n => `
+      <div class="nail-card">
+        <div class="img-wrap">
+          ${n.img
+            ? `<img src="${n.img}" alt="${n.name}" loading="lazy"/>`
+            : `<span class="no-img">🧴</span>`}
+        </div>
+        <div class="info">
+          <div class="name">${n.name}</div>
+          <div class="date">${formatDate(n.date)}</div>
+        </div>
+        <button class="btn-delete" onclick="askDelete('${n.id}', '${(n.name||'').replace(/'/g,"\\'")}', '${n.img||''}')">✕</button>
+      </div>
+    `).join('');
+  }
+
+  // ── HELPERS ──
+  function setSyncStatus(state, label) {
+    const dot = document.getElementById('syncDot');
+    dot.className = `sync-dot ${state}`;
+    document.getElementById('syncLabel').textContent = label;
+  }
+
+  window.showToast = function(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  };
+
+  window.formatDate = function(d) {
+    if (!d) return '';
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  };
+
+  window.closeModal = function() {
+    pendingDeleteId = null;
+    document.getElementById('modalOverlay').classList.remove('open');
+  };
+</script>
+
+<script>
+  // Código não-module (UI helpers)
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dateInput').value = today;
+
+  window._imgBase64 = null;
+
+  function openSheet() {
+    document.getElementById('sheet').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+  }
+  window.openSheet = openSheet;
+
+  function closeSheet() {
+    document.getElementById('sheet').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
+  window.closeSheet = closeSheet;
+
+  function setPreview(src) {
+    const p = document.getElementById('preview');
+    p.src = src; p.style.display = 'block';
+    document.querySelector('#imgLabel .up-icon').style.display = 'none';
+    document.getElementById('uploadHint').style.display = 'none';
+  }
+
+  function clearPreview() {
+    const p = document.getElementById('preview');
+    p.src = ''; p.style.display = 'none';
+    document.querySelector('#imgLabel .up-icon').style.display = '';
+    document.getElementById('uploadHint').style.display = '';
+  }
+  window.clearPreview = clearPreview;
+
+  document.getElementById('imgInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    document.getElementById('urlInput').value = '';
+    window._imgBase64 = null;
+    const r = new FileReader();
+    r.onload = e => { window._imgBase64 = e.target.result; setPreview(window._imgBase64); };
+    r.readAsDataURL(file);
+  });
+
+  window.handleUrlInput = function() {
+    const url = document.getElementById('urlInput').value.trim();
+    document.getElementById('imgInput').value = '';
+    window._imgBase64 = null;
+    url ? setPreview(url) : clearPreview();
+  };
+
+  // Swipe down to close sheet
+  let startY = 0;
+  const sheet = document.getElementById('sheet');
+  sheet.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  sheet.addEventListener('touchend', e => {
+    if (e.changedTouches[0].clientY - startY > 80) closeSheet();
+  }, { passive: true });
+</script>
+</body>
+</html>
