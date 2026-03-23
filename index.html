@@ -5,265 +5,236 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="theme-color" content="#6b1f3a"/>
-  <title>Minha Coleção 💅</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <meta name="theme-color" content="#1a1a1a"/>
+  <title>Minha Coleção</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #fef8f5;
+  --bg: #f7f7f5;
   --card: #ffffff;
-  --accent: #b5365a;
-  --accent2: #e8547a;
-  --accent-light: #fce8ef;
-  --accent-dark: #6b1f3a;
-  --text: #1e0e17;
-  --muted: #a07b8a;
-  --border: #edd8e2;
-  --radius: 20px;
-  --shadow: 0 4px 24px rgba(107,31,58,0.10);
+  --accent: #c94070;
+  --accent-soft: #f5e8ed;
+  --text: #111111;
+  --muted: #888888;
+  --border: #e8e8e4;
+  --radius: 16px;
+  --shadow: 0 1px 8px rgba(0,0,0,0.06);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overscroll-behavior: none; }
 body {
-  font-family: 'Jost', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-tap-highlight-color: transparent;
 }
-body::before {
-  content: '';
-  position: fixed; top: -120px; right: -120px;
-  width: 420px; height: 420px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(181,54,90,0.12) 0%, transparent 70%);
-  pointer-events: none; z-index: 0;
-}
-body::after {
-  content: '';
-  position: fixed; bottom: -80px; left: -80px;
-  width: 300px; height: 300px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(181,54,90,0.07) 0%, transparent 70%);
-  pointer-events: none; z-index: 0;
-}
 .app-header {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(254,248,245,0.93);
+  background: rgba(247,247,245,0.95);
   border-bottom: 1px solid var(--border);
   padding: 20px 20px 14px;
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
 }
-.header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .app-header h1 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.9rem; font-style: italic;
-  color: var(--accent-dark); line-height: 1; letter-spacing: -0.01em;
-}
-.app-header .subtitle {
-  font-size: 0.72rem; font-weight: 500;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--muted); margin-top: 4px;
+  font-size: 1.1rem; font-weight: 600;
+  color: var(--text); letter-spacing: -0.02em;
 }
 .count-badge {
-  background: var(--accent-dark); color: #fff;
-  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em;
-  padding: 5px 14px; border-radius: 30px; white-space: nowrap; margin-top: 6px;
+  background: var(--text); color: #fff;
+  font-size: 0.68rem; font-weight: 500;
+  padding: 4px 12px; border-radius: 20px;
 }
 .header-bottom { display: flex; align-items: center; gap: 6px; }
 .sync-dot {
-  display: inline-block; width: 6px; height: 6px;
+  display: inline-block; width: 5px; height: 5px;
   border-radius: 50%; background: #ccc; flex-shrink: 0;
 }
 .sync-dot.ok      { background: #34c759; }
 .sync-dot.err     { background: #ff3b30; }
 .sync-dot.loading { background: #ff9500; animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.sync-label { font-size: 0.68rem; color: var(--muted); font-weight: 400; }
+.sync-label { font-size: 0.65rem; color: var(--muted); font-weight: 400; }
 .realtime-pill {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(52,199,89,0.12); border: 1px solid rgba(52,199,89,0.25);
-  border-radius: 20px; padding: 3px 10px;
-  font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(52,199,89,0.08); border: 1px solid rgba(52,199,89,0.2);
+  border-radius: 20px; padding: 2px 8px;
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em;
   text-transform: uppercase; color: #1d7a33;
   opacity: 0; transition: opacity 0.5s; margin-left: 4px;
 }
 .realtime-pill.visible { opacity: 1; }
 .realtime-pill .rt-dot {
-  width: 5px; height: 5px; border-radius: 50%;
+  width: 4px; height: 4px; border-radius: 50%;
   background: #34c759; animation: pulse 1.5s infinite;
 }
-.main { padding: 20px 16px 130px; min-height: 100vh; position: relative; z-index: 1; }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.main { padding: 16px 14px 120px; min-height: 100vh; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .nail-card {
   background: var(--card); border-radius: var(--radius);
   box-shadow: var(--shadow); border: 1px solid var(--border);
   overflow: hidden; position: relative;
-  animation: fadeUp 0.35s cubic-bezier(0.23,1,0.32,1) both;
-  transition: transform 0.15s, box-shadow 0.15s;
+  animation: fadeUp 0.3s ease both;
+  transition: transform 0.15s;
 }
-@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-.nail-card:active { transform: scale(0.96); box-shadow: 0 2px 12px rgba(107,31,58,0.08); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.nail-card:active { transform: scale(0.97); }
 .nail-card .img-wrap {
   width: 100%; aspect-ratio: 3/4; overflow: hidden;
-  background: linear-gradient(145deg, var(--accent-light), #fdf0f5);
+  background: var(--accent-soft);
   display: flex; align-items: center; justify-content: center; position: relative;
 }
 .nail-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-.nail-card .img-wrap::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
-  background: linear-gradient(to top, rgba(30,14,23,0.3), transparent);
-  pointer-events: none;
-}
-.nail-card .img-wrap .no-img { font-size: 2.8rem; opacity: 0.25; }
-.nail-card .info { padding: 11px 13px 13px; }
+.nail-card .img-wrap .no-img { font-size: 2.4rem; opacity: 0.2; }
+.nail-card .info { padding: 10px 12px 12px; }
 .nail-card .name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1rem; font-weight: 600; color: var(--text);
-  margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+  font-size: 0.88rem; font-weight: 500; color: var(--text);
+  margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
 }
-.nail-card .date { font-size: 0.66rem; color: var(--muted); font-weight: 500; letter-spacing: 0.04em; }
-.btn-delete {
-  position: absolute; top: 9px; right: 9px;
-  background: rgba(255,255,255,0.9); border: none; border-radius: 50%;
-  width: 30px; height: 30px;
+.nail-card .date { font-size: 0.62rem; color: var(--muted); font-weight: 400; }
+.card-actions {
+  position: absolute; top: 8px; right: 8px;
+  display: flex; flex-direction: column; gap: 5px; z-index: 2;
+}
+.btn-action {
+  background: rgba(255,255,255,0.92); border: none; border-radius: 50%;
+  width: 28px; height: 28px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 0.72rem; color: var(--accent);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.14); backdrop-filter: blur(4px);
-  transition: transform 0.1s; z-index: 2;
+  cursor: pointer; font-size: 0.62rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.12); backdrop-filter: blur(4px);
+  transition: transform 0.1s;
 }
-.btn-delete:active { transform: scale(0.82); }
-.empty-state { text-align: center; padding: 70px 24px; color: var(--muted); grid-column: span 2; }
-.empty-state .emoji { font-size: 4rem; margin-bottom: 18px; display: block; opacity: 0.7; }
-.empty-state .empty-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.3rem; font-style: italic; color: var(--accent-dark); margin-bottom: 8px;
-}
-.empty-state p { font-size: 0.88rem; font-weight: 300; line-height: 1.7; }
+.btn-action:active { transform: scale(0.82); }
+.btn-action.edit { color: #555; }
+.btn-action.delete { color: var(--accent); }
+.empty-state { text-align: center; padding: 60px 24px; color: var(--muted); grid-column: span 2; }
+.empty-state .emoji { font-size: 3rem; margin-bottom: 14px; display: block; opacity: 0.5; }
+.empty-state .empty-title { font-size: 1rem; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+.empty-state p { font-size: 0.82rem; font-weight: 300; line-height: 1.7; }
 .spinner {
-  width: 32px; height: 32px;
-  border: 2.5px solid var(--border); border-top-color: var(--accent);
+  width: 28px; height: 28px;
+  border: 2px solid var(--border); border-top-color: var(--accent);
   border-radius: 50%; animation: spin 0.75s linear infinite;
-  margin: 70px auto; grid-column: span 2;
+  margin: 60px auto; grid-column: span 2;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
 .fab {
-  position: fixed; bottom: calc(var(--safe-bottom) + 28px); right: 22px;
-  z-index: 200; width: 58px; height: 58px; border-radius: 50%;
-  background: linear-gradient(140deg, var(--accent), var(--accent2));
-  color: #fff; font-size: 1.6rem; border: none; cursor: pointer;
-  box-shadow: 0 6px 24px rgba(181,54,90,0.50);
+  position: fixed; bottom: calc(var(--safe-bottom) + 24px); right: 20px;
+  z-index: 200; width: 52px; height: 52px; border-radius: 50%;
+  background: var(--text);
+  color: #fff; font-size: 1.4rem; border: none; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.18s, box-shadow 0.18s;
+  transition: transform 0.18s;
 }
-.fab:active { transform: scale(0.88); box-shadow: 0 3px 12px rgba(181,54,90,0.35); }
+.fab:active { transform: scale(0.88); }
 .overlay {
-  position: fixed; inset: 0; background: rgba(30,14,23,0.5); z-index: 300;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 300;
   opacity: 0; pointer-events: none; transition: opacity 0.3s;
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
 }
 .overlay.open { opacity: 1; pointer-events: all; }
 .sheet {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
-  background: var(--card); border-radius: 28px 28px 0 0;
-  padding: 0 22px calc(32px + var(--safe-bottom));
+  background: var(--card); border-radius: 22px 22px 0 0;
+  padding: 0 20px calc(28px + var(--safe-bottom));
   transform: translateY(100%);
-  transition: transform 0.4s cubic-bezier(0.32,0.72,0,1);
+  transition: transform 0.38s cubic-bezier(0.32,0.72,0,1);
   max-height: 93vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
-  box-shadow: 0 -8px 40px rgba(107,31,58,0.15);
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.08);
 }
 .sheet.open { transform: translateY(0); }
-.sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 16px auto 22px; }
-.sheet-header { margin-bottom: 22px; }
-.sheet h2 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.5rem; font-style: italic; color: var(--accent-dark); line-height: 1.1;
-}
-.sheet .sheet-subtitle { font-size: 0.73rem; color: var(--muted); font-weight: 400; margin-top: 3px; }
-.field { margin-bottom: 18px; }
+.sheet-handle { width: 32px; height: 3px; background: var(--border); border-radius: 2px; margin: 14px auto 20px; }
+.sheet-header { margin-bottom: 20px; }
+.sheet h2 { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+.sheet .sheet-subtitle { font-size: 0.72rem; color: var(--muted); font-weight: 400; margin-top: 3px; }
+.field { margin-bottom: 16px; }
 .field label {
-  display: block; font-size: 0.68rem; font-weight: 600;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+  display: block; font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px;
 }
 .field input[type="text"],
 .field input[type="date"] {
-  width: 100%; padding: 15px 16px;
-  border: 1.5px solid var(--border); border-radius: 14px;
-  font-family: 'Jost', sans-serif; font-size: 0.97rem;
+  width: 100%; padding: 13px 14px;
+  border: 1px solid var(--border); border-radius: 12px;
+  font-family: 'Inter', sans-serif; font-size: 0.92rem;
   color: var(--text); background: var(--bg); outline: none;
   -webkit-appearance: none; appearance: none; transition: border-color 0.2s;
 }
-.field input:focus { border-color: var(--accent); background: #fff; }
+.field input:focus { border-color: var(--text); background: #fff; }
 .image-upload-label {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 8px; width: 100%; height: 140px;
-  border: 2px dashed var(--border); border-radius: 14px;
+  gap: 7px; width: 100%; height: 120px;
+  border: 1.5px dashed var(--border); border-radius: 12px;
   cursor: pointer; background: var(--bg); overflow: hidden; position: relative;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color 0.2s;
 }
-.image-upload-label:active { border-color: var(--accent); background: var(--accent-light); }
-.image-upload-label .up-icon { font-size: 2.2rem; }
-.image-upload-label .up-hint { font-size: 0.8rem; color: var(--muted); text-align: center; padding: 0 16px; line-height: 1.4; }
-.image-upload-label img#preview {
+.image-upload-label:active { border-color: var(--accent); }
+.image-upload-label .up-icon { font-size: 1.8rem; }
+.image-upload-label .up-hint { font-size: 0.75rem; color: var(--muted); text-align: center; padding: 0 16px; line-height: 1.4; }
+.image-upload-label img#preview,
+.image-upload-label img#editPreview {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;
 }
-#imgInput { display: none; }
+#imgInput, #editImgInput { display: none; }
 .url-divider {
   display: flex; align-items: center; gap: 10px;
-  margin: 14px 0 10px; color: var(--muted); font-size: 0.7rem;
+  margin: 12px 0 8px; color: var(--muted); font-size: 0.65rem;
   font-weight: 500; letter-spacing: 0.05em;
 }
 .url-divider::before, .url-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .btn-submit {
-  width: 100%; padding: 17px;
-  background: linear-gradient(135deg, var(--accent-dark), var(--accent), var(--accent2));
-  color: #fff; border: none; border-radius: 16px;
-  font-family: 'Jost', sans-serif; font-size: 1rem; font-weight: 600;
-  cursor: pointer; margin-top: 10px;
-  box-shadow: 0 6px 20px rgba(181,54,90,0.38);
-  letter-spacing: 0.03em; transition: opacity 0.2s, transform 0.15s;
+  width: 100%; padding: 15px;
+  background: var(--text);
+  color: #fff; border: none; border-radius: 12px;
+  font-family: 'Inter', sans-serif; font-size: 0.92rem; font-weight: 600;
+  cursor: pointer; margin-top: 8px;
+  letter-spacing: 0.01em; transition: opacity 0.2s, transform 0.15s;
 }
-.btn-submit:active { opacity: 0.86; transform: scale(0.98); }
-.btn-submit:disabled { opacity: 0.55; }
+.btn-submit:active { opacity: 0.8; transform: scale(0.99); }
+.btn-submit:disabled { opacity: 0.4; }
+.btn-submit.secondary {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border); margin-top: 8px;
+}
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(30,14,23,0.55); z-index: 500;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 500;
   display: flex; align-items: flex-end;
   opacity: 0; pointer-events: none; transition: opacity 0.25s;
 }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 .modal-box {
-  background: var(--card); border-radius: 24px 24px 0 0;
-  padding: 30px 22px calc(26px + var(--safe-bottom)); width: 100%;
+  background: var(--card); border-radius: 20px 20px 0 0;
+  padding: 28px 20px calc(24px + var(--safe-bottom)); width: 100%;
   transform: translateY(100%);
   transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
-  box-shadow: 0 -6px 30px rgba(107,31,58,0.12);
 }
 .modal-overlay.open .modal-box { transform: translateY(0); }
-.modal-icon { text-align: center; font-size: 2.2rem; margin-bottom: 12px; }
-.modal-box p { font-size: 0.97rem; color: var(--text); text-align: center; margin-bottom: 24px; line-height: 1.55; }
-.modal-box p strong { color: var(--accent-dark); font-weight: 600; }
-.modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-icon { text-align: center; font-size: 1.8rem; margin-bottom: 10px; }
+.modal-box p { font-size: 0.9rem; color: var(--muted); text-align: center; margin-bottom: 22px; line-height: 1.55; }
+.modal-box p strong { color: var(--text); font-weight: 600; }
+.modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .btn-cancel {
-  padding: 15px; border-radius: 14px; border: 1.5px solid var(--border);
-  background: transparent; font-family: 'Jost', sans-serif;
-  font-size: 0.95rem; color: var(--muted); cursor: pointer;
+  padding: 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: transparent; font-family: 'Inter', sans-serif;
+  font-size: 0.88rem; color: var(--muted); cursor: pointer;
 }
-.btn-cancel:active { background: var(--accent-light); }
 .btn-confirm-del {
-  padding: 15px; border-radius: 14px; border: none;
-  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
-  color: #fff; font-family: 'Jost', sans-serif;
-  font-size: 0.95rem; font-weight: 600; cursor: pointer;
-  box-shadow: 0 4px 14px rgba(181,54,90,0.35);
+  padding: 14px; border-radius: 12px; border: none;
+  background: var(--accent);
+  color: #fff; font-family: 'Inter', sans-serif;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
 }
-.btn-confirm-del:active { opacity: 0.82; }
 #toast {
-  position: fixed; bottom: calc(var(--safe-bottom) + 100px); left: 50%;
-  transform: translateX(-50%) translateY(12px);
-  background: var(--accent-dark); color: #fff;
-  padding: 12px 26px; border-radius: 40px; font-size: 0.86rem; font-weight: 500;
-  opacity: 0; transition: opacity 0.28s, transform 0.28s;
+  position: fixed; bottom: calc(var(--safe-bottom) + 90px); left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--text); color: #fff;
+  padding: 11px 22px; border-radius: 30px; font-size: 0.82rem; font-weight: 500;
+  opacity: 0; transition: opacity 0.25s, transform 0.25s;
   pointer-events: none; z-index: 999; white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(107,31,58,0.35); letter-spacing: 0.02em;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 @media (min-width: 600px) {
@@ -276,10 +247,7 @@ body::after {
 
 <div class="app-header">
   <div class="header-top">
-    <div>
-      <h1>💅 Minha Coleção</h1>
-      <div class="subtitle">de esmaltes por validade</div>
-    </div>
+    <h1>💅 Minha Coleção</h1>
     <span class="count-badge" id="countBadge">0 esmaltes</span>
   </div>
   <div class="header-bottom">
@@ -298,34 +266,68 @@ body::after {
 <button class="fab" onclick="openSheet()" aria-label="Adicionar esmalte">＋</button>
 <div class="overlay" id="overlay" onclick="closeSheet()"></div>
 
+<!-- Sheet: Adicionar -->
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <h2>✦ Adicionar Esmalte</h2>
+    <h2>Adicionar Esmalte</h2>
     <div class="sheet-subtitle">Registre um novo esmalte na sua coleção</div>
   </div>
   <div class="field">
-    <label>Foto do Esmalte</label>
+    <label>Foto</label>
     <label class="image-upload-label" for="imgInput" id="imgLabel">
       <span class="up-icon">📷</span>
       <span class="up-hint" id="uploadHint">Toque para escolher da galeria</span>
       <img id="preview" alt="preview"/>
     </label>
     <input type="file" id="imgInput" accept="image/*"/>
-    <div class="url-divider"><span>ou cole a URL da imagem</span></div>
+    <div class="url-divider"><span>ou cole a URL</span></div>
     <input type="text" id="urlInput" placeholder="https://..." oninput="handleUrlInput()" autocomplete="off" autocorrect="off"/>
   </div>
   <div class="field">
-    <label>Nome do Esmalte</label>
+    <label>Nome</label>
     <input type="text" id="nameInput" placeholder="Ex: Rosa Quartzo" autocomplete="off"/>
   </div>
   <div class="field">
-    <label>Data de Validade</label>
+    <label>Data</label>
     <input type="date" id="dateInput"/>
   </div>
-  <button class="btn-submit" id="btnSubmit" onclick="addNail()">＋ Adicionar à Coleção</button>
+  <button class="btn-submit" id="btnSubmit" onclick="addNail()">＋ Adicionar</button>
 </div>
 
+<!-- Sheet: Editar -->
+<div class="overlay" id="editOverlay" onclick="closeEditSheet()"></div>
+<div class="sheet" id="editSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <h2>Editar Esmalte</h2>
+    <div class="sheet-subtitle">Atualize as informações</div>
+  </div>
+  <input type="hidden" id="editId"/>
+  <input type="hidden" id="editOldImg"/>
+  <div class="field">
+    <label>Foto</label>
+    <label class="image-upload-label" for="editImgInput" id="editImgLabel">
+      <span class="up-icon" id="editUpIcon">📷</span>
+      <span class="up-hint" id="editUploadHint">Toque para trocar a foto</span>
+      <img id="editPreview" alt="preview"/>
+    </label>
+    <input type="file" id="editImgInput" accept="image/*"/>
+    <div class="url-divider"><span>ou cole a URL</span></div>
+    <input type="text" id="editUrlInput" placeholder="https://..." oninput="handleEditUrlInput()" autocomplete="off" autocorrect="off"/>
+  </div>
+  <div class="field">
+    <label>Nome</label>
+    <input type="text" id="editNameInput" placeholder="Ex: Rosa Quartzo" autocomplete="off"/>
+  </div>
+  <div class="field">
+    <label>Data</label>
+    <input type="date" id="editDateInput"/>
+  </div>
+  <button class="btn-submit" id="btnEditSubmit" onclick="saveEdit()">✓ Salvar Alterações</button>
+</div>
+
+<!-- Modal: Confirmar Delete -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
     <div class="modal-icon">🗑️</div>
@@ -344,8 +346,11 @@ body::after {
   document.getElementById('dateInput').value = window._today;
   window._imgBase64 = null;
   window._imgFile   = null;
+  window._editImgBase64 = null;
+  window._editImgFile   = null;
 
-  window.openSheet  = () => {
+  // ── ADD SHEET ──
+  window.openSheet = () => {
     document.getElementById('sheet').classList.add('open');
     document.getElementById('overlay').classList.add('open');
   };
@@ -353,6 +358,17 @@ body::after {
     document.getElementById('sheet').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
   };
+
+  // ── EDIT SHEET ──
+  window.openEditSheet = () => {
+    document.getElementById('editSheet').classList.add('open');
+    document.getElementById('editOverlay').classList.add('open');
+  };
+  window.closeEditSheet = () => {
+    document.getElementById('editSheet').classList.remove('open');
+    document.getElementById('editOverlay').classList.remove('open');
+  };
+
   window.showToast = function(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
@@ -361,6 +377,8 @@ body::after {
   window.closeModal = function() {
     document.getElementById('modalOverlay').classList.remove('open');
   };
+
+  // ── PREVIEW helpers: Add ──
   function setPreview(src) {
     const p = document.getElementById('preview');
     p.src = src; p.style.display = 'block';
@@ -373,6 +391,22 @@ body::after {
     document.querySelector('#imgLabel .up-icon').style.display = '';
     document.getElementById('uploadHint').style.display = '';
   };
+
+  // ── PREVIEW helpers: Edit ──
+  function setEditPreview(src) {
+    const p = document.getElementById('editPreview');
+    p.src = src; p.style.display = 'block';
+    document.getElementById('editUpIcon').style.display = 'none';
+    document.getElementById('editUploadHint').style.display = 'none';
+  }
+  function clearEditPreview() {
+    const p = document.getElementById('editPreview');
+    p.src = ''; p.style.display = 'none';
+    document.getElementById('editUpIcon').style.display = '';
+    document.getElementById('editUploadHint').style.display = '';
+  }
+
+  // ── FILE INPUT: Add ──
   document.getElementById('imgInput').addEventListener('change', function() {
     const file = this.files[0];
     if (!file) return;
@@ -403,16 +437,59 @@ body::after {
     reader.onerror = () => { showToast('⚠️ Erro ao ler arquivo.'); window._imgFile = null; clearPreview(); };
     reader.readAsDataURL(file);
   });
+
   window.handleUrlInput = () => {
     const url = document.getElementById('urlInput').value.trim();
     document.getElementById('imgInput').value = '';
     window._imgBase64 = null; window._imgFile = null;
     url ? setPreview(url) : clearPreview();
   };
-  let _startY = 0;
-  const _sheet = document.getElementById('sheet');
-  _sheet.addEventListener('touchstart', e => { _startY = e.touches[0].clientY; }, {passive:true});
-  _sheet.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - _startY > 80) closeSheet(); }, {passive:true});
+
+  // ── FILE INPUT: Edit ──
+  document.getElementById('editImgInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('⚠️ Selecione uma imagem válida.'); this.value = ''; return; }
+    document.getElementById('editUrlInput').value = '';
+    window._editImgFile = file; window._editImgBase64 = null;
+    const objectUrl = URL.createObjectURL(file);
+    setEditPreview(objectUrl);
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const MAX = 900; let w = img.width, h = img.height;
+          if (w > h && w > MAX) { h = Math.round(h*MAX/w); w = MAX; }
+          else if (h > MAX)     { w = Math.round(w*MAX/h); h = MAX; }
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          cv.getContext('2d').drawImage(img, 0, 0, w, h);
+          window._editImgBase64 = cv.toDataURL('image/jpeg', 0.78);
+          URL.revokeObjectURL(objectUrl);
+          setEditPreview(window._editImgBase64);
+        } catch(err) {}
+      };
+      img.onerror = () => { showToast('⚠️ Erro ao carregar imagem.'); window._editImgFile = null; };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.handleEditUrlInput = () => {
+    const url = document.getElementById('editUrlInput').value.trim();
+    document.getElementById('editImgInput').value = '';
+    window._editImgBase64 = null; window._editImgFile = null;
+    url ? setEditPreview(url) : clearEditPreview();
+  };
+
+  // ── Sheet swipe down ──
+  [['sheet','closeSheet'],['editSheet','closeEditSheet']].forEach(([id, fn]) => {
+    const el = document.getElementById(id);
+    let _startY = 0;
+    el.addEventListener('touchstart', e => { _startY = e.touches[0].clientY; }, {passive:true});
+    el.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - _startY > 80) window[fn](); }, {passive:true});
+  });
 </script>
 
 <script type="module">
@@ -443,12 +520,12 @@ body::after {
       grid.innerHTML = `<div class="empty-state">
         <span class="emoji">🧴</span>
         <div class="empty-title">Coleção vazia</div>
-        <p>Toque no <strong style="color:var(--accent)">＋</strong> para adicionar<br>seu primeiro esmalte!</p>
+        <p>Toque no <strong style="color:var(--text)">＋</strong> para adicionar<br>seu primeiro esmalte!</p>
       </div>`;
       return;
     }
     grid.innerHTML = items.map((n, i) => `
-      <div class="nail-card" style="animation-delay:${i*0.05}s">
+      <div class="nail-card" style="animation-delay:${i*0.04}s">
         <div class="img-wrap">
           ${n.img
             ? `<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" loading="lazy"
@@ -460,8 +537,12 @@ body::after {
           <div class="name">${escHtml(n.name)}</div>
           <div class="date">${fmtDate(n.date)}</div>
         </div>
-        <button class="btn-delete"
-          onclick="window._askDelete('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.img||'')}')">✕</button>
+        <div class="card-actions">
+          <button class="btn-action edit"
+            onclick="window._openEdit('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.date||'')}','${escAttr(n.img||'')}')">✎</button>
+          <button class="btn-action delete"
+            onclick="window._askDelete('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.img||'')}')">✕</button>
+        </div>
       </div>`).join('');
   }
 
@@ -486,7 +567,6 @@ body::after {
     .then(() => clearTimeout(loadTimeout))
     .catch(() => { clearTimeout(loadTimeout); setSyncStatus('err', 'Sem conexão'); renderGrid([]); });
 
-  // ── REALTIME: atualiza automaticamente ao adicionar ou excluir ──
   try {
     supabase.channel('esmaltes-changes')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'esmaltes' }, () => fetchItems())
@@ -540,7 +620,65 @@ body::after {
       console.error(e);
       showToast('❌ Erro ao salvar: ' + (e.message || 'verifique a conexão'));
     } finally {
-      btn.disabled = false; btn.textContent = '＋ Adicionar à Coleção';
+      btn.disabled = false; btn.textContent = '＋ Adicionar';
+    }
+  };
+
+  // ── ABRIR EDITAR ──
+  window._openEdit = function(id, name, date, img) {
+    window._editImgBase64 = null;
+    window._editImgFile   = null;
+    document.getElementById('editId').value   = id;
+    document.getElementById('editOldImg').value = img;
+    document.getElementById('editNameInput').value = name;
+    document.getElementById('editDateInput').value = date;
+    document.getElementById('editImgInput').value  = '';
+    document.getElementById('editUrlInput').value  = '';
+    if (img) {
+      setEditPreview(img);
+    } else {
+      clearEditPreview();
+    }
+    openEditSheet();
+  };
+
+  // ── SALVAR EDITAR ──
+  window.saveEdit = async function() {
+    const id   = document.getElementById('editId').value;
+    const name = document.getElementById('editNameInput').value.trim();
+    const date = document.getElementById('editDateInput').value;
+    const urlVal = document.getElementById('editUrlInput').value.trim();
+    const oldImg = document.getElementById('editOldImg').value;
+    if (!name) { showToast('⚠️ Informe o nome!'); return; }
+    if (!date) { showToast('⚠️ Informe a data!'); return; }
+    const btn = document.getElementById('btnEditSubmit');
+    btn.disabled = true; btn.textContent = 'Salvando...';
+    try {
+      let imgUrl = oldImg || null;
+      if (urlVal) {
+        imgUrl = urlVal;
+      } else if (window._editImgFile) {
+        try {
+          const ext  = (window._editImgFile.name.split('.').pop() || 'jpg').toLowerCase();
+          const path = `esmaltes/${Date.now()}.${ext}`;
+          const { error: upErr } = await supabase.storage
+            .from('fotos').upload(path, window._editImgFile, {contentType: window._editImgFile.type});
+          imgUrl = upErr
+            ? (window._editImgBase64 || oldImg || null)
+            : supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
+        } catch(e) { imgUrl = window._editImgBase64 || oldImg || null; }
+      } else if (window._editImgBase64) {
+        imgUrl = window._editImgBase64;
+      }
+      const { error } = await supabase.from('esmaltes').update({name, date, img: imgUrl}).eq('id', id);
+      if (error) throw error;
+      closeEditSheet();
+      showToast('✏️ Esmalte atualizado!');
+    } catch(e) {
+      console.error(e);
+      showToast('❌ Erro ao atualizar: ' + (e.message || 'verifique a conexão'));
+    } finally {
+      btn.disabled = false; btn.textContent = '✓ Salvar Alterações';
     }
   };
 
