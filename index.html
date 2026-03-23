@@ -5,244 +5,289 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="theme-color" content="#8c2d45"/>
+  <meta name="theme-color" content="#6b1f3a"/>
   <title>Minha Coleção 💅</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #fdf6f0;
+  --bg: #fef8f5;
   --card: #ffffff;
-  --accent: #c0506a;
-  --accent-light: #f7dce3;
-  --accent-dark: #8c2d45;
-  --text: #2a1a1f;
-  --muted: #9b7e88;
-  --border: #f0dde5;
-  --radius: 16px;
-  --shadow: 0 2px 16px rgba(192,80,106,0.10);
+  --accent: #b5365a;
+  --accent2: #e8547a;
+  --accent-light: #fce8ef;
+  --accent-dark: #6b1f3a;
+  --text: #1e0e17;
+  --muted: #a07b8a;
+  --border: #edd8e2;
+  --radius: 20px;
+  --shadow: 0 4px 24px rgba(107,31,58,0.10);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overscroll-behavior: none; }
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Jost', sans-serif;
   background: var(--bg);
   color: var(--text);
   -webkit-tap-highlight-color: transparent;
-  background-image: radial-gradient(circle at 90% 5%, rgba(192,80,106,0.07) 0%, transparent 45%);
+}
+body::before {
+  content: '';
+  position: fixed; top: -120px; right: -120px;
+  width: 420px; height: 420px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(181,54,90,0.12) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; bottom: -80px; left: -80px;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(181,54,90,0.07) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
 }
 .app-header {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(253,246,240,0.95);
+  background: rgba(254,248,245,0.93);
   border-bottom: 1px solid var(--border);
-  padding: 18px 20px 14px;
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  padding: 20px 20px 14px;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
 }
-.header-row { display: flex; align-items: flex-start; justify-content: space-between; }
-.app-header h1 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--accent-dark); }
-.app-header .subtitle { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.app-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.9rem; font-style: italic;
+  color: var(--accent-dark); line-height: 1; letter-spacing: -0.01em;
+}
+.app-header .subtitle {
+  font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-top: 4px;
+}
 .count-badge {
-  background: var(--accent-light); color: var(--accent);
-  font-size: 0.75rem; font-weight: 600;
-  padding: 4px 12px; border-radius: 20px;
-  border: 1px solid rgba(192,80,106,0.2);
-  white-space: nowrap; margin-top: 4px;
+  background: var(--accent-dark); color: #fff;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em;
+  padding: 5px 14px; border-radius: 30px; white-space: nowrap; margin-top: 6px;
 }
+.header-bottom { display: flex; align-items: center; gap: 6px; }
 .sync-dot {
-  display: inline-block; width: 7px; height: 7px;
-  border-radius: 50%; margin-right: 5px;
-  background: #ccc; vertical-align: middle;
+  display: inline-block; width: 6px; height: 6px;
+  border-radius: 50%; background: #ccc; flex-shrink: 0;
 }
-.sync-dot.ok      { background: #4caf50; }
-.sync-dot.err     { background: #f44336; }
-.sync-dot.loading { background: #ff9800; animation: pulse 1s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.sync-label { font-size: 0.7rem; color: var(--muted); }
-.main { padding: 16px 16px 120px; min-height: 100vh; }
+.sync-dot.ok      { background: #34c759; }
+.sync-dot.err     { background: #ff3b30; }
+.sync-dot.loading { background: #ff9500; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.sync-label { font-size: 0.68rem; color: var(--muted); font-weight: 400; }
+.realtime-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(52,199,89,0.12); border: 1px solid rgba(52,199,89,0.25);
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #1d7a33;
+  opacity: 0; transition: opacity 0.5s; margin-left: 4px;
+}
+.realtime-pill.visible { opacity: 1; }
+.realtime-pill .rt-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #34c759; animation: pulse 1.5s infinite;
+}
+.main { padding: 20px 16px 130px; min-height: 100vh; position: relative; z-index: 1; }
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .nail-card {
   background: var(--card); border-radius: var(--radius);
   box-shadow: var(--shadow); border: 1px solid var(--border);
   overflow: hidden; position: relative;
-  animation: fadeUp 0.3s ease both; transition: transform 0.1s;
+  animation: fadeUp 0.35s cubic-bezier(0.23,1,0.32,1) both;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
-@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-.nail-card:active { transform: scale(0.97); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+.nail-card:active { transform: scale(0.96); box-shadow: 0 2px 12px rgba(107,31,58,0.08); }
 .nail-card .img-wrap {
   width: 100%; aspect-ratio: 3/4; overflow: hidden;
-  background: var(--accent-light);
-  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, var(--accent-light), #fdf0f5);
+  display: flex; align-items: center; justify-content: center; position: relative;
 }
 .nail-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-.nail-card .img-wrap .no-img { font-size: 2.5rem; opacity: 0.35; }
-.nail-card .info { padding: 10px 12px 12px; }
+.nail-card .img-wrap::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
+  background: linear-gradient(to top, rgba(30,14,23,0.3), transparent);
+  pointer-events: none;
+}
+.nail-card .img-wrap .no-img { font-size: 2.8rem; opacity: 0.25; }
+.nail-card .info { padding: 11px 13px 13px; }
 .nail-card .name {
-  font-family: 'Playfair Display', serif;
-  font-size: 0.92rem; color: var(--text); margin-bottom: 3px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem; font-weight: 600; color: var(--text);
+  margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
 }
-.nail-card .date { font-size: 0.7rem; color: var(--muted); }
+.nail-card .date { font-size: 0.66rem; color: var(--muted); font-weight: 500; letter-spacing: 0.04em; }
 .btn-delete {
-  position: absolute; top: 8px; right: 8px;
-  background: rgba(255,255,255,0.92); border: none; border-radius: 50%;
-  width: 32px; height: 32px;
+  position: absolute; top: 9px; right: 9px;
+  background: rgba(255,255,255,0.9); border: none; border-radius: 50%;
+  width: 30px; height: 30px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 0.78rem; color: var(--accent);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  cursor: pointer; font-size: 0.72rem; color: var(--accent);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.14); backdrop-filter: blur(4px);
+  transition: transform 0.1s; z-index: 2;
 }
-.btn-delete:active { transform: scale(0.88); }
-.empty-state {
-  text-align: center; padding: 60px 24px;
-  color: var(--muted); grid-column: span 2;
+.btn-delete:active { transform: scale(0.82); }
+.empty-state { text-align: center; padding: 70px 24px; color: var(--muted); grid-column: span 2; }
+.empty-state .emoji { font-size: 4rem; margin-bottom: 18px; display: block; opacity: 0.7; }
+.empty-state .empty-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; font-style: italic; color: var(--accent-dark); margin-bottom: 8px;
 }
-.empty-state .emoji { font-size: 3.5rem; margin-bottom: 16px; display: block; }
-.empty-state p { font-size: 0.95rem; font-weight: 300; line-height: 1.6; }
+.empty-state p { font-size: 0.88rem; font-weight: 300; line-height: 1.7; }
 .spinner {
-  width: 36px; height: 36px;
-  border: 3px solid var(--border); border-top-color: var(--accent);
-  border-radius: 50%; animation: spin 0.8s linear infinite;
-  margin: 60px auto; grid-column: span 2;
+  width: 32px; height: 32px;
+  border: 2.5px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.75s linear infinite;
+  margin: 70px auto; grid-column: span 2;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
 .fab {
-  position: fixed;
-  bottom: calc(var(--safe-bottom) + 24px); right: 20px;
-  z-index: 200; width: 60px; height: 60px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #d96b85);
-  color: #fff; font-size: 1.7rem; border: none; cursor: pointer;
-  box-shadow: 0 4px 20px rgba(192,80,106,0.45);
+  position: fixed; bottom: calc(var(--safe-bottom) + 28px); right: 22px;
+  z-index: 200; width: 58px; height: 58px; border-radius: 50%;
+  background: linear-gradient(140deg, var(--accent), var(--accent2));
+  color: #fff; font-size: 1.6rem; border: none; cursor: pointer;
+  box-shadow: 0 6px 24px rgba(181,54,90,0.50);
   display: flex; align-items: center; justify-content: center;
-  transition: transform 0.15s;
+  transition: transform 0.18s, box-shadow 0.18s;
 }
-.fab:active { transform: scale(0.91); }
+.fab:active { transform: scale(0.88); box-shadow: 0 3px 12px rgba(181,54,90,0.35); }
 .overlay {
-  position: fixed; inset: 0;
-  background: rgba(42,26,31,0.45); z-index: 300;
+  position: fixed; inset: 0; background: rgba(30,14,23,0.5); z-index: 300;
   opacity: 0; pointer-events: none; transition: opacity 0.3s;
-  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
 }
 .overlay.open { opacity: 1; pointer-events: all; }
 .sheet {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
-  background: var(--card); border-radius: 24px 24px 0 0;
-  padding: 0 20px calc(28px + var(--safe-bottom));
+  background: var(--card); border-radius: 28px 28px 0 0;
+  padding: 0 22px calc(32px + var(--safe-bottom));
   transform: translateY(100%);
-  transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
-  max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  transition: transform 0.4s cubic-bezier(0.32,0.72,0,1);
+  max-height: 93vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  box-shadow: 0 -8px 40px rgba(107,31,58,0.15);
 }
 .sheet.open { transform: translateY(0); }
-.sheet-handle {
-  width: 40px; height: 4px; background: var(--border);
-  border-radius: 2px; margin: 14px auto 20px;
-}
+.sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 16px auto 22px; }
+.sheet-header { margin-bottom: 22px; }
 .sheet h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.25rem; color: var(--accent-dark); margin-bottom: 20px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem; font-style: italic; color: var(--accent-dark); line-height: 1.1;
 }
-.field { margin-bottom: 16px; }
+.sheet .sheet-subtitle { font-size: 0.73rem; color: var(--muted); font-weight: 400; margin-top: 3px; }
+.field { margin-bottom: 18px; }
 .field label {
-  display: block; font-size: 0.71rem; font-weight: 600;
-  letter-spacing: 0.07em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 7px;
+  display: block; font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
 }
 .field input[type="text"],
 .field input[type="date"] {
-  width: 100%; padding: 14px 16px;
-  border: 1.5px solid var(--border); border-radius: 12px;
-  font-family: 'DM Sans', sans-serif; font-size: 1rem;
+  width: 100%; padding: 15px 16px;
+  border: 1.5px solid var(--border); border-radius: 14px;
+  font-family: 'Jost', sans-serif; font-size: 0.97rem;
   color: var(--text); background: var(--bg); outline: none;
-  -webkit-appearance: none; appearance: none;
+  -webkit-appearance: none; appearance: none; transition: border-color 0.2s;
 }
-.field input:focus { border-color: var(--accent); }
+.field input:focus { border-color: var(--accent); background: #fff; }
 .image-upload-label {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 8px; width: 100%; height: 130px;
-  border: 2px dashed var(--border); border-radius: 12px;
-  cursor: pointer; background: var(--bg);
-  overflow: hidden; position: relative;
+  gap: 8px; width: 100%; height: 140px;
+  border: 2px dashed var(--border); border-radius: 14px;
+  cursor: pointer; background: var(--bg); overflow: hidden; position: relative;
+  transition: border-color 0.2s, background 0.2s;
 }
 .image-upload-label:active { border-color: var(--accent); background: var(--accent-light); }
-.image-upload-label .up-icon { font-size: 2rem; }
-.image-upload-label .up-hint { font-size: 0.82rem; color: var(--muted); text-align: center; padding: 0 12px; }
+.image-upload-label .up-icon { font-size: 2.2rem; }
+.image-upload-label .up-hint { font-size: 0.8rem; color: var(--muted); text-align: center; padding: 0 16px; line-height: 1.4; }
 .image-upload-label img#preview {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; display: none;
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none;
 }
 #imgInput { display: none; }
 .url-divider {
   display: flex; align-items: center; gap: 10px;
-  margin: 12px 0 10px; color: var(--muted); font-size: 0.72rem;
+  margin: 14px 0 10px; color: var(--muted); font-size: 0.7rem;
+  font-weight: 500; letter-spacing: 0.05em;
 }
-.url-divider::before, .url-divider::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
+.url-divider::before, .url-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .btn-submit {
-  width: 100%; padding: 16px;
-  background: linear-gradient(135deg, var(--accent), #d96b85);
-  color: #fff; border: none; border-radius: 14px;
-  font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
-  cursor: pointer; margin-top: 8px;
-  box-shadow: 0 4px 16px rgba(192,80,106,0.35);
+  width: 100%; padding: 17px;
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent), var(--accent2));
+  color: #fff; border: none; border-radius: 16px;
+  font-family: 'Jost', sans-serif; font-size: 1rem; font-weight: 600;
+  cursor: pointer; margin-top: 10px;
+  box-shadow: 0 6px 20px rgba(181,54,90,0.38);
+  letter-spacing: 0.03em; transition: opacity 0.2s, transform 0.15s;
 }
-.btn-submit:active { opacity: 0.88; transform: scale(0.98); }
-.btn-submit:disabled { opacity: 0.6; }
+.btn-submit:active { opacity: 0.86; transform: scale(0.98); }
+.btn-submit:disabled { opacity: 0.55; }
 .modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(42,26,31,0.5); z-index: 500;
+  position: fixed; inset: 0; background: rgba(30,14,23,0.55); z-index: 500;
   display: flex; align-items: flex-end;
   opacity: 0; pointer-events: none; transition: opacity 0.25s;
 }
 .modal-overlay.open { opacity: 1; pointer-events: all; }
 .modal-box {
-  background: var(--card); border-radius: 20px 20px 0 0;
-  padding: 28px 20px calc(24px + var(--safe-bottom)); width: 100%;
+  background: var(--card); border-radius: 24px 24px 0 0;
+  padding: 30px 22px calc(26px + var(--safe-bottom)); width: 100%;
   transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+  box-shadow: 0 -6px 30px rgba(107,31,58,0.12);
 }
 .modal-overlay.open .modal-box { transform: translateY(0); }
-.modal-box p { font-size: 1rem; color: var(--text); text-align: center; margin-bottom: 22px; line-height: 1.5; }
-.modal-box p strong { color: var(--accent-dark); }
+.modal-icon { text-align: center; font-size: 2.2rem; margin-bottom: 12px; }
+.modal-box p { font-size: 0.97rem; color: var(--text); text-align: center; margin-bottom: 24px; line-height: 1.55; }
+.modal-box p strong { color: var(--accent-dark); font-weight: 600; }
 .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .btn-cancel {
-  padding: 14px; border-radius: 12px;
-  border: 1.5px solid var(--border); background: transparent;
-  font-family: 'DM Sans', sans-serif; font-size: 0.97rem; color: var(--muted); cursor: pointer;
+  padding: 15px; border-radius: 14px; border: 1.5px solid var(--border);
+  background: transparent; font-family: 'Jost', sans-serif;
+  font-size: 0.95rem; color: var(--muted); cursor: pointer;
 }
+.btn-cancel:active { background: var(--accent-light); }
 .btn-confirm-del {
-  padding: 14px; border-radius: 12px; border: none;
-  background: var(--accent); color: #fff;
-  font-family: 'DM Sans', sans-serif; font-size: 0.97rem; font-weight: 600; cursor: pointer;
+  padding: 15px; border-radius: 14px; border: none;
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+  color: #fff; font-family: 'Jost', sans-serif;
+  font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(181,54,90,0.35);
 }
+.btn-confirm-del:active { opacity: 0.82; }
 #toast {
-  position: fixed;
-  bottom: calc(var(--safe-bottom) + 96px); left: 50%;
-  transform: translateX(-50%) translateY(10px);
+  position: fixed; bottom: calc(var(--safe-bottom) + 100px); left: 50%;
+  transform: translateX(-50%) translateY(12px);
   background: var(--accent-dark); color: #fff;
-  padding: 11px 24px; border-radius: 30px; font-size: 0.88rem;
-  opacity: 0; transition: opacity 0.3s, transform 0.3s;
+  padding: 12px 26px; border-radius: 40px; font-size: 0.86rem; font-weight: 500;
+  opacity: 0; transition: opacity 0.28s, transform 0.28s;
   pointer-events: none; z-index: 999; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(107,31,58,0.35); letter-spacing: 0.02em;
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 @media (min-width: 600px) {
   .grid { grid-template-columns: repeat(3, 1fr); }
-  .main { max-width: 700px; margin: 0 auto; }
+  .main { max-width: 720px; margin: 0 auto; }
 }
 </style>
 </head>
 <body>
 
 <div class="app-header">
-  <div class="header-row">
+  <div class="header-top">
     <div>
       <h1>💅 Minha Coleção</h1>
       <div class="subtitle">de esmaltes</div>
     </div>
     <span class="count-badge" id="countBadge">0 esmaltes</span>
   </div>
-  <div style="margin-top:8px">
+  <div class="header-bottom">
     <span class="sync-dot loading" id="syncDot"></span>
     <span class="sync-label" id="syncLabel">Conectando...</span>
+    <span class="realtime-pill" id="realtimePill">
+      <span class="rt-dot"></span> ao vivo
+    </span>
   </div>
 </div>
 
@@ -255,7 +300,10 @@ body {
 
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
-  <h2>✦ Adicionar Esmalte</h2>
+  <div class="sheet-header">
+    <h2>✦ Adicionar Esmalte</h2>
+    <div class="sheet-subtitle">Registre um novo esmalte na sua coleção</div>
+  </div>
   <div class="field">
     <label>Foto do Esmalte</label>
     <label class="image-upload-label" for="imgInput" id="imgLabel">
@@ -265,14 +313,14 @@ body {
     </label>
     <input type="file" id="imgInput" accept="image/*"/>
     <div class="url-divider"><span>ou cole a URL da imagem</span></div>
-    <input type="text" id="urlInput" placeholder="https://i.pinimg.com/..." oninput="handleUrlInput()" autocomplete="off" autocorrect="off"/>
+    <input type="text" id="urlInput" placeholder="https://..." oninput="handleUrlInput()" autocomplete="off" autocorrect="off"/>
   </div>
   <div class="field">
     <label>Nome do Esmalte</label>
     <input type="text" id="nameInput" placeholder="Ex: Rosa Quartzo" autocomplete="off"/>
   </div>
   <div class="field">
-    <label>Data de Aquisição</label>
+    <label>Data de Validade</label>
     <input type="date" id="dateInput"/>
   </div>
   <button class="btn-submit" id="btnSubmit" onclick="addNail()">＋ Adicionar à Coleção</button>
@@ -280,6 +328,7 @@ body {
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
+    <div class="modal-icon">🗑️</div>
     <p>Remover <strong id="modalName"></strong> da sua coleção?</p>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
@@ -290,7 +339,6 @@ body {
 
 <div id="toast"></div>
 
-<!-- UI helpers — acesso global -->
 <script>
   window._today = new Date().toISOString().split('T')[0];
   document.getElementById('dateInput').value = window._today;
@@ -308,12 +356,11 @@ body {
   window.showToast = function(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2600);
+    setTimeout(() => t.classList.remove('show'), 2800);
   };
   window.closeModal = function() {
     document.getElementById('modalOverlay').classList.remove('open');
   };
-
   function setPreview(src) {
     const p = document.getElementById('preview');
     p.src = src; p.style.display = 'block';
@@ -326,29 +373,20 @@ body {
     document.querySelector('#imgLabel .up-icon').style.display = '';
     document.getElementById('uploadHint').style.display = '';
   };
-
   document.getElementById('imgInput').addEventListener('change', function() {
     const file = this.files[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      showToast('⚠️ Selecione uma imagem válida.'); this.value = ''; return;
-    }
+    if (!file.type.startsWith('image/')) { showToast('⚠️ Selecione uma imagem válida.'); this.value = ''; return; }
     document.getElementById('urlInput').value = '';
-    window._imgFile = file;
-    window._imgBase64 = null;
-
-    // Preview imediato
+    window._imgFile = file; window._imgBase64 = null;
     const objectUrl = URL.createObjectURL(file);
     setPreview(objectUrl);
-
-    // Comprime para base64 (fallback quando Storage não existe)
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
       img.onload = () => {
         try {
-          const MAX = 900;
-          let w = img.width, h = img.height;
+          const MAX = 900; let w = img.width, h = img.height;
           if (w > h && w > MAX) { h = Math.round(h*MAX/w); w = MAX; }
           else if (h > MAX)     { w = Math.round(w*MAX/h); h = MAX; }
           const cv = document.createElement('canvas');
@@ -357,36 +395,26 @@ body {
           window._imgBase64 = cv.toDataURL('image/jpeg', 0.78);
           URL.revokeObjectURL(objectUrl);
           setPreview(window._imgBase64);
-        } catch(err) { /* mantém objectUrl */ }
+        } catch(err) {}
       };
-      img.onerror = () => {
-        showToast('⚠️ Erro ao carregar imagem.');
-        window._imgFile = null; clearPreview();
-      };
+      img.onerror = () => { showToast('⚠️ Erro ao carregar imagem.'); window._imgFile = null; clearPreview(); };
       img.src = e.target.result;
     };
-    reader.onerror = () => {
-      showToast('⚠️ Erro ao ler arquivo.');
-      window._imgFile = null; clearPreview();
-    };
+    reader.onerror = () => { showToast('⚠️ Erro ao ler arquivo.'); window._imgFile = null; clearPreview(); };
     reader.readAsDataURL(file);
   });
-
   window.handleUrlInput = () => {
     const url = document.getElementById('urlInput').value.trim();
     document.getElementById('imgInput').value = '';
     window._imgBase64 = null; window._imgFile = null;
     url ? setPreview(url) : clearPreview();
   };
-
-  // Swipe para fechar sheet
   let _startY = 0;
   const _sheet = document.getElementById('sheet');
   _sheet.addEventListener('touchstart', e => { _startY = e.touches[0].clientY; }, {passive:true});
   _sheet.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - _startY > 80) closeSheet(); }, {passive:true});
 </script>
 
-<!-- Supabase em module isolado -->
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
@@ -414,12 +442,13 @@ body {
     if (!items.length) {
       grid.innerHTML = `<div class="empty-state">
         <span class="emoji">🧴</span>
-        <p>Sua coleção está vazia.<br>Toque no <strong style="color:var(--accent)">＋</strong> para adicionar!</p>
+        <div class="empty-title">Coleção vazia</div>
+        <p>Toque no <strong style="color:var(--accent)">＋</strong> para adicionar<br>seu primeiro esmalte!</p>
       </div>`;
       return;
     }
-    grid.innerHTML = items.map(n => `
-      <div class="nail-card">
+    grid.innerHTML = items.map((n, i) => `
+      <div class="nail-card" style="animation-delay:${i*0.05}s">
         <div class="img-wrap">
           ${n.img
             ? `<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" loading="lazy"
@@ -445,10 +474,9 @@ body {
       .from('esmaltes').select('*').order('date', {ascending: true});
     if (error) { console.error(error); setSyncStatus('err', 'Erro ao carregar'); renderGrid([]); return; }
     renderGrid(Array.isArray(data) ? data : []);
-    setSyncStatus('ok', 'Sincronizado ✓');
+    setSyncStatus('ok', 'Sincronizado');
   }
 
-  // Timeout de segurança: 8s
   const loadTimeout = setTimeout(() => {
     setSyncStatus('err', 'Tempo esgotado — verifique conexão');
     renderGrid([]);
@@ -458,15 +486,23 @@ body {
     .then(() => clearTimeout(loadTimeout))
     .catch(() => { clearTimeout(loadTimeout); setSyncStatus('err', 'Sem conexão'); renderGrid([]); });
 
-  // Realtime
+  // ── REALTIME: atualiza automaticamente ao adicionar ou excluir ──
   try {
-    supabase.channel('esmaltes-rt')
-      .on('postgres_changes', {event:'*', schema:'public', table:'esmaltes'}, () => fetchItems())
-      .subscribe(s => {
-        if (s === 'SUBSCRIBED')    setSyncStatus('ok',  'Sincronizado em tempo real ✓');
-        if (s === 'CHANNEL_ERROR') setSyncStatus('err', 'Erro tempo real');
+    supabase.channel('esmaltes-changes')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'esmaltes' }, () => fetchItems())
+      .on('postgres_changes', { event: 'DELETE',  schema: 'public', table: 'esmaltes' }, () => fetchItems())
+      .on('postgres_changes', { event: 'UPDATE',  schema: 'public', table: 'esmaltes' }, () => fetchItems())
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') {
+          setSyncStatus('ok', 'Ao vivo');
+          document.getElementById('realtimePill').classList.add('visible');
+        }
+        if (status === 'CHANNEL_ERROR') {
+          setSyncStatus('err', 'Erro de conexão');
+          document.getElementById('realtimePill').classList.remove('visible');
+        }
       });
-  } catch(e) { /* realtime é opcional */ }
+  } catch(e) {}
 
   // ── ADICIONAR ──
   window.addNail = async function() {
@@ -475,30 +511,23 @@ body {
     const url  = document.getElementById('urlInput').value.trim();
     if (!name) { showToast('⚠️ Informe o nome do esmalte!'); return; }
     if (!date) { showToast('⚠️ Informe a data!'); return; }
-
     const btn = document.getElementById('btnSubmit');
     btn.disabled = true; btn.textContent = 'Salvando...';
     try {
       let imgUrl = url || null;
-
       if (window._imgFile) {
         try {
           const ext  = (window._imgFile.name.split('.').pop() || 'jpg').toLowerCase();
           const path = `esmaltes/${Date.now()}.${ext}`;
           const { error: upErr } = await supabase.storage
-            .from('fotos')
-            .upload(path, window._imgFile, {contentType: window._imgFile.type});
+            .from('fotos').upload(path, window._imgFile, {contentType: window._imgFile.type});
           imgUrl = upErr
-            ? (window._imgBase64 || null)   // fallback: base64 comprimida
+            ? (window._imgBase64 || null)
             : supabase.storage.from('fotos').getPublicUrl(path).data.publicUrl;
-        } catch(e) {
-          imgUrl = window._imgBase64 || null;
-        }
+        } catch(e) { imgUrl = window._imgBase64 || null; }
       }
-
       const { error } = await supabase.from('esmaltes').insert([{name, date, img: imgUrl}]);
       if (error) throw error;
-
       document.getElementById('nameInput').value = '';
       document.getElementById('dateInput').value = window._today;
       document.getElementById('imgInput').value  = '';
@@ -517,7 +546,6 @@ body {
 
   // ── DELETAR ──
   let _delId = null, _delImg = null;
-
   window._askDelete = function(id, name, img) {
     _delId = id; _delImg = img;
     document.getElementById('modalName').textContent = name;
