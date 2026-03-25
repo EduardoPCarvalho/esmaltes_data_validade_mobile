@@ -569,6 +569,78 @@ body::after {
   .main { max-width: 760px; margin: 0 auto; }
 }
 
+/* ───── STATS PANEL ───── */
+.stats-panel {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px; margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--glass); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 2px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.22s;
+}
+.stat-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(200,169,106,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+.stat-card.danger { border-color: rgba(232,80,102,0.25); background: rgba(232,80,102,0.05); }
+.stat-card.warn   { border-color: rgba(232,160,64,0.25);  background: rgba(232,160,64,0.05); }
+.stat-card.ok     { border-color: rgba(82,199,122,0.2);   background: rgba(82,199,122,0.04); }
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; font-weight: 400; line-height: 1;
+}
+.stat-card.danger .stat-num { color: #e85066; }
+.stat-card.warn   .stat-num { color: #e8a040; }
+.stat-card.ok     .stat-num { color: #52c77a; }
+.stat-card:not(.danger):not(.warn):not(.ok) .stat-num { color: var(--gold); }
+.stat-lbl {
+  font-size: 0.46rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); font-family: 'Cinzel', serif;
+}
+
+/* ───── EXPIRY FILTER PILLS ───── */
+.filter-pill.f-expired  { }
+.filter-pill.active.f-expired  { border-color: rgba(232,80,102,0.4); background: rgba(232,80,102,0.1); color: #f08090; }
+.filter-pill.active.f-expired .pill-dot { background: #e85066; }
+.filter-pill.f-expiring { }
+.filter-pill.active.f-expiring { border-color: rgba(232,160,64,0.4); background: rgba(232,160,64,0.1); color: #e8b060; }
+.filter-pill.active.f-expiring .pill-dot { background: #e8a040; }
+.filter-pill.f-used { }
+.filter-pill.active.f-used { border-color: rgba(128,180,255,0.4); background: rgba(128,180,255,0.1); color: #a0c8ff; }
+.filter-pill.active.f-used .pill-dot { background: #80b4ff; }
+.filter-pill.f-notused { }
+.filter-pill.active.f-notused { border-color: rgba(176,140,255,0.4); background: rgba(176,140,255,0.1); color: #c8b0ff; }
+.filter-pill.active.f-notused .pill-dot { background: #b08cff; }
+
+/* ───── JÁ USEI BUTTON ───── */
+.btn-action.used {
+  background: rgba(14,11,15,0.75); border: 1px solid var(--border);
+}
+.btn-action.used.marked {
+  background: rgba(128,180,255,0.15); border-color: rgba(128,180,255,0.35);
+  color: #a0c8ff;
+}
+.btn-action.used:active { background: rgba(128,180,255,0.2); }
+
+/* Used card overlay */
+.nail-card.used-card {
+  opacity: 0.55;
+}
+.nail-card.used-card .card-accent {
+  background: linear-gradient(90deg, #80b4ff, #5090e0) !important;
+  opacity: 1 !important;
+}
+.used-stamp {
+  position: absolute; bottom: 50px; left: 0; right: 0;
+  text-align: center; z-index: 4;
+  font-size: 0.46rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(128,180,255,0.6); font-family: 'Cinzel', serif;
+}
+
 /* ───── EXPIRY SECTIONS ───── */
 .section-block { margin-bottom: 32px; }
 
@@ -595,8 +667,7 @@ body::after {
   background: linear-gradient(90deg, rgba(232,80,102,0.35), transparent);
 }
 .section-expired .nail-card {
-  opacity: 0.62;
-  filter: saturate(0.3) brightness(0.75);
+  opacity: 0.75;
   border-color: rgba(232,80,102,0.2);
 }
 .section-expired .nail-card .card-accent {
@@ -695,6 +766,18 @@ body::after {
       <button class="filter-pill f-outras" data-brand="outras" onclick="setFilter(this)">
         <span class="pill-dot" style="background:var(--r-outras)"></span>Outras
       </button>
+      <button class="filter-pill f-expiring" data-status="expiring" onclick="setStatusFilter(this)">
+        <span class="pill-dot" style="background:#e8a040"></span>A vencer
+      </button>
+      <button class="filter-pill f-expired" data-status="expired" onclick="setStatusFilter(this)">
+        <span class="pill-dot" style="background:#e85066"></span>Vencidos
+      </button>
+      <button class="filter-pill f-used" data-status="used" onclick="setStatusFilter(this)">
+        <span class="pill-dot" style="background:#80b4ff"></span>Já usei
+      </button>
+      <button class="filter-pill f-notused" data-status="notused" onclick="setStatusFilter(this)">
+        <span class="pill-dot" style="background:#b08cff"></span>Não usei
+      </button>
     </div>
 
     <div class="status-row">
@@ -709,6 +792,22 @@ body::after {
 
 <!-- ── MAIN GRID ── -->
 <div class="main">
+
+  <!-- Stats panel -->
+  <div class="stats-panel" id="statsPanel">
+    <div class="stat-card" id="statTotal">
+      <span class="stat-num" id="statTotalNum">0</span>
+      <span class="stat-lbl">Total</span>
+    </div>
+    <div class="stat-card warn" id="statExpiring">
+      <span class="stat-num" id="statExpiringNum">0</span>
+      <span class="stat-lbl">A vencer</span>
+    </div>
+    <div class="stat-card danger" id="statExpired">
+      <span class="stat-num" id="statExpiredNum">0</span>
+      <span class="stat-lbl">Vencidos</span>
+    </div>
+  </div>
   <!-- Expired section -->
   <div class="section-block section-expired" id="sectionExpired" style="display:none">
     <div class="section-header">
@@ -869,11 +968,39 @@ body::after {
 
   window._allItems = [];
   window._activeFilter = 'all';
+  window._activeStatus = 'all';
+  window._usedItems = JSON.parse(localStorage.getItem('usedItems') || '{}');
+
+  window.getDaysUntilExpiry = function(dateStr) {
+    if (!dateStr) return null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const exp = new Date(dateStr + 'T00:00:00');
+    return Math.ceil((exp - today) / (1000*60*60*24));
+  };
 
   window.setFilter = function(btn) {
     document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     window._activeFilter = btn.dataset.brand;
+    window._activeStatus = 'all';
+    applyFilters();
+  };
+
+  window.setStatusFilter = function(btn) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    window._activeStatus = btn.dataset.status;
+    window._activeFilter = 'all';
+    applyFilters();
+  };
+
+  window.toggleUsed = function(id) {
+    if (window._usedItems[id]) {
+      delete window._usedItems[id];
+    } else {
+      window._usedItems[id] = true;
+    }
+    localStorage.setItem('usedItems', JSON.stringify(window._usedItems));
     applyFilters();
   };
   window.applyFilters = function() {
@@ -884,6 +1011,17 @@ body::after {
       filtered = filtered.filter(n => (n.brand||'') === window._activeFilter);
     if (query)
       filtered = filtered.filter(n => (n.name||'').toLowerCase().includes(query));
+
+    // status filter
+    if (window._activeStatus === 'expired')
+      filtered = filtered.filter(n => n.date && window.getDaysUntilExpiry(n.date) < 0);
+    else if (window._activeStatus === 'expiring')
+      filtered = filtered.filter(n => n.date && window.getDaysUntilExpiry(n.date) >= 0 && window.getDaysUntilExpiry(n.date) <= 30);
+    else if (window._activeStatus === 'used')
+      filtered = filtered.filter(n => window._usedItems[n.id]);
+    else if (window._activeStatus === 'notused')
+      filtered = filtered.filter(n => !window._usedItems[n.id]);
+
     renderGrid(filtered, true);
   };
   window.clearSearch = function() {
@@ -1006,8 +1144,11 @@ body::after {
     const b=n.brand||''; const bl=BRAND_LABELS[b]||'';
     const ribbon=b?`<div class="brand-ribbon ${escHtml(b)}">${escHtml(bl)}</div>`:'';
     const tag   =b?`<span class="brand-tag ${escHtml(b)}">${escHtml(bl)}</span>`:'';
+    const isUsed = !!window._usedItems[n.id];
+    const usedClass = isUsed ? ' used-card' : '';
+    const usedStamp = isUsed ? `<div class="used-stamp">✓ já usei</div>` : '';
     return `
-    <div class="nail-card" style="animation-delay:${i*0.05}s">
+    <div class="nail-card${usedClass}" style="animation-delay:${i*0.05}s">
       <div class="card-accent"></div>
       ${extra}
       <div class="img-wrap">
@@ -1017,6 +1158,7 @@ body::after {
             <span class="no-img" style="display:none">🧴</span>`
           :`<span class="no-img">🧴</span>`}
         ${ribbon}
+        ${usedStamp}
       </div>
       <div class="info">
         <div class="name">${escHtml(n.name)}</div>
@@ -1026,6 +1168,8 @@ body::after {
         </div>
       </div>
       <div class="card-actions">
+        <button class="btn-action used${isUsed?' marked':''}" title="${isUsed?'Desmarcar':'Já usei'}"
+          onclick="window.toggleUsed('${escAttr(n.id)}')">✓</button>
         <button class="btn-action edit"
           onclick="window._openEdit('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.date||'')}','${escAttr(n.img||'')}','${escAttr(n.brand||'')}')">✎</button>
         <button class="btn-action delete"
@@ -1035,15 +1179,22 @@ body::after {
   }
 
   function getDaysUntilExpiry(dateStr) {
-    if (!dateStr) return null;
-    const today = new Date(); today.setHours(0,0,0,0);
-    const exp = new Date(dateStr + 'T00:00:00');
-    return Math.ceil((exp - today) / (1000*60*60*24));
+    return window.getDaysUntilExpiry(dateStr);
   }
 
   window.renderGrid = function(items, isFiltered) {
     const today = new Date(); today.setHours(0,0,0,0);
     const WARN_DAYS = 30;
+
+    // Update stats from ALL items (not filtered)
+    const allItems = window._allItems;
+    const totalExpired  = allItems.filter(n => n.date && getDaysUntilExpiry(n.date) < 0).length;
+    const totalExpiring = allItems.filter(n => n.date && getDaysUntilExpiry(n.date) >= 0 && getDaysUntilExpiry(n.date) <= WARN_DAYS).length;
+    document.getElementById('statTotalNum').textContent    = allItems.length;
+    document.getElementById('statExpiringNum').textContent = totalExpiring;
+    document.getElementById('statExpiredNum').textContent  = totalExpired;
+    document.getElementById('statExpired').className  = 'stat-card' + (totalExpired  > 0 ? ' danger' : '');
+    document.getElementById('statExpiring').className = 'stat-card' + (totalExpiring > 0 ? ' warn'   : '');
 
     const expired  = items.filter(n => n.date && getDaysUntilExpiry(n.date) < 0);
     const expiring = items.filter(n => n.date && getDaysUntilExpiry(n.date) >= 0 && getDaysUntilExpiry(n.date) <= WARN_DAYS);
