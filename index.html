@@ -969,7 +969,7 @@ body::after {
   window._allItems = [];
   window._activeFilter = 'all';
   window._activeStatus = 'all';
-  window._usedItems = JSON.parse(localStorage.getItem('usedItems') || '{}');
+  window._usedItems = {};
 
   window.getDaysUntilExpiry = function(dateStr) {
     if (!dateStr) return null;
@@ -994,14 +994,20 @@ body::after {
     applyFilters();
   };
 
-  window.toggleUsed = function(id) {
-    if (window._usedItems[id]) {
-      delete window._usedItems[id];
-    } else {
-      window._usedItems[id] = true;
-    }
-    localStorage.setItem('usedItems', JSON.stringify(window._usedItems));
+  window.toggleUsed = async function(id) {
+    const isUsed = !!window._usedItems[id];
+    // Optimistic update
+    if (isUsed) { delete window._usedItems[id]; } else { window._usedItems[id] = true; }
     applyFilters();
+    try {
+      const { error } = await window.supabase.from('esmaltes').update({ used: !isUsed }).eq('id', id);
+      if (error) throw error;
+    } catch(e) {
+      // Revert on error
+      if (isUsed) { window._usedItems[id] = true; } else { delete window._usedItems[id]; }
+      applyFilters();
+      showToast('❌ Erro ao salvar.');
+    }
   };
   window.applyFilters = function() {
     const query = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -1246,13 +1252,16 @@ body::after {
   };
 
   let supabase;
-  try { supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY); }
+  try { supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY); window.supabase=supabase; }
   catch(e){ setSyncStatus('err','Erro'); window.renderGrid([]); throw e; }
 
   async function fetchItems(){
     const {data,error}=await supabase.from('esmaltes').select('*').order('date',{ascending:true});
     if(error){ setSyncStatus('err','Erro ao carregar'); window.renderGrid([]); return; }
     window._allItems=Array.isArray(data)?data:[];
+    // Rebuild _usedItems from Supabase data
+    window._usedItems={};
+    window._allItems.forEach(n=>{ if(n.used) window._usedItems[n.id]=true; });
     window.applyFilters();
     setSyncStatus('ok','Sincronizado');
   }
