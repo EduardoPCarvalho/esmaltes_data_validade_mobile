@@ -568,6 +568,82 @@ body::after {
   .grid { grid-template-columns: repeat(3, 1fr); }
   .main { max-width: 760px; margin: 0 auto; }
 }
+
+/* ───── EXPIRY SECTIONS ───── */
+.section-block { margin-bottom: 32px; }
+
+.section-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.section-icon { font-size: 1rem; }
+.section-title-wrap { display: flex; flex-direction: column; gap: 1px; }
+.section-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.46rem; letter-spacing: 0.28em; text-transform: uppercase;
+}
+.section-count {
+  font-size: 0.58rem; color: var(--muted); font-weight: 300;
+}
+.section-line {
+  flex: 1; height: 1px;
+}
+
+/* Expired section */
+.section-expired .section-eyebrow { color: #e85066; }
+.section-expired .section-line {
+  background: linear-gradient(90deg, rgba(232,80,102,0.35), transparent);
+}
+.section-expired .nail-card {
+  opacity: 0.62;
+  filter: saturate(0.3) brightness(0.75);
+  border-color: rgba(232,80,102,0.2);
+}
+.section-expired .nail-card .card-accent {
+  background: linear-gradient(90deg, #e85066, #c04055);
+  opacity: 1 !important;
+}
+.section-expired .nail-card::after {
+  content: 'VENCIDO';
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-25deg);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem; letter-spacing: 0.22em;
+  color: rgba(232,80,102,0.55);
+  font-weight: 500; pointer-events: none; z-index: 5;
+  border: 1px solid rgba(232,80,102,0.3); padding: 4px 10px; border-radius: 4px;
+}
+.expired-badge {
+  position: absolute; bottom: 50px; left: 0; right: 0;
+  text-align: center; z-index: 4;
+  font-size: 0.5rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(232,80,102,0.7); font-family: 'Cinzel', serif;
+}
+
+/* Expiring soon section */
+.section-expiring .section-eyebrow { color: #e8a040; }
+.section-expiring .section-line {
+  background: linear-gradient(90deg, rgba(232,160,64,0.35), transparent);
+}
+.section-expiring .nail-card {
+  border-color: rgba(232,160,64,0.25);
+  box-shadow: 0 0 0 1px rgba(232,160,64,0.08), inset 0 0 30px rgba(232,160,64,0.03);
+}
+.section-expiring .nail-card .card-accent {
+  background: linear-gradient(90deg, #e8a040, #c87020);
+  opacity: 1 !important;
+}
+.expiring-badge {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  background: rgba(232,160,64,0.15); border: 1px solid rgba(232,160,64,0.3);
+  border-radius: 4px; padding: 2px 8px; z-index: 4;
+  font-size: 0.46rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: #e8b060; font-family: 'Cinzel', serif; white-space: nowrap;
+}
+
+.section-divider {
+  height: 1px; margin: 28px 0;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
 </style>
 </head>
 <body>
@@ -633,6 +709,35 @@ body::after {
 
 <!-- ── MAIN GRID ── -->
 <div class="main">
+  <!-- Expired section -->
+  <div class="section-block section-expired" id="sectionExpired" style="display:none">
+    <div class="section-header">
+      <span class="section-icon">⚠️</span>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Vencidos</span>
+        <span class="section-count" id="expiredCount"></span>
+      </div>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid" id="gridExpired"></div>
+    <div class="section-divider"></div>
+  </div>
+
+  <!-- Expiring soon section -->
+  <div class="section-block section-expiring" id="sectionExpiring" style="display:none">
+    <div class="section-header">
+      <span class="section-icon">⏳</span>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Prestes a vencer</span>
+        <span class="section-count" id="expiringCount"></span>
+      </div>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid" id="gridExpiring"></div>
+    <div class="section-divider"></div>
+  </div>
+
+  <!-- Valid collection -->
   <div class="grid-label">Sua coleção</div>
   <div class="grid" id="grid"><div class="spinner"></div></div>
 </div>
@@ -897,50 +1002,96 @@ body::after {
     const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`;
   }
 
+  function buildCardHtml(n, i, extra='') {
+    const b=n.brand||''; const bl=BRAND_LABELS[b]||'';
+    const ribbon=b?`<div class="brand-ribbon ${escHtml(b)}">${escHtml(bl)}</div>`:'';
+    const tag   =b?`<span class="brand-tag ${escHtml(b)}">${escHtml(bl)}</span>`:'';
+    return `
+    <div class="nail-card" style="animation-delay:${i*0.05}s">
+      <div class="card-accent"></div>
+      ${extra}
+      <div class="img-wrap">
+        ${n.img
+          ?`<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" loading="lazy"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+            <span class="no-img" style="display:none">🧴</span>`
+          :`<span class="no-img">🧴</span>`}
+        ${ribbon}
+      </div>
+      <div class="info">
+        <div class="name">${escHtml(n.name)}</div>
+        <div class="meta">
+          <div class="date">${fmtDate(n.date)}</div>
+          ${tag}
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-action edit"
+          onclick="window._openEdit('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.date||'')}','${escAttr(n.img||'')}','${escAttr(n.brand||'')}')">✎</button>
+        <button class="btn-action delete"
+          onclick="window._askDelete('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.img||'')}')">✕</button>
+      </div>
+    </div>`;
+  }
+
+  function getDaysUntilExpiry(dateStr) {
+    if (!dateStr) return null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const exp = new Date(dateStr + 'T00:00:00');
+    return Math.ceil((exp - today) / (1000*60*60*24));
+  }
+
   window.renderGrid = function(items, isFiltered) {
-    const grid=document.getElementById('grid');
-    const total=window._allItems.length;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const WARN_DAYS = 30;
+
+    const expired  = items.filter(n => n.date && getDaysUntilExpiry(n.date) < 0);
+    const expiring = items.filter(n => n.date && getDaysUntilExpiry(n.date) >= 0 && getDaysUntilExpiry(n.date) <= WARN_DAYS);
+    const valid    = items.filter(n => !n.date || getDaysUntilExpiry(n.date) > WARN_DAYS);
+
+    const total = window._allItems.length;
     document.getElementById('countNum').textContent = isFiltered ? items.length : total;
 
-    if(!items.length){
-      const isS=document.getElementById('searchInput').value.trim().length>0;
-      grid.innerHTML=`<div class="empty-state">
-        <span class="e-icon">${isS?'⌕':'🧴'}</span>
-        <div class="e-title">${isS?'Sem resultados':'Coleção vazia'}</div>
-        <p>${isS?'Nenhum esmalte com esse nome.':'Toque no <strong style="color:var(--gold)">＋</strong> para adicionar<br>seu primeiro esmalte.'}</p>
-      </div>`;
-      return;
+    // ── Expired section ──
+    const secExp = document.getElementById('sectionExpired');
+    const gridExp = document.getElementById('gridExpired');
+    if (expired.length) {
+      secExp.style.display = '';
+      document.getElementById('expiredCount').textContent = `${expired.length} esmalte${expired.length>1?'s':''} vencido${expired.length>1?'s':''}`;
+      gridExp.innerHTML = expired.map((n,i) => buildCardHtml(n, i)).join('');
+    } else {
+      secExp.style.display = 'none';
     }
-    grid.innerHTML = items.map((n,i)=>{
-      const b=n.brand||''; const bl=BRAND_LABELS[b]||'';
-      const ribbon=b?`<div class="brand-ribbon ${escHtml(b)}">${escHtml(bl)}</div>`:'';
-      const tag   =b?`<span class="brand-tag ${escHtml(b)}">${escHtml(bl)}</span>`:'';
-      return `
-      <div class="nail-card" style="animation-delay:${i*0.05}s">
-        <div class="card-accent"></div>
-        <div class="img-wrap">
-          ${n.img
-            ?`<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" loading="lazy"
-                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-              <span class="no-img" style="display:none">🧴</span>`
-            :`<span class="no-img">🧴</span>`}
-          ${ribbon}
-        </div>
-        <div class="info">
-          <div class="name">${escHtml(n.name)}</div>
-          <div class="meta">
-            <div class="date">${fmtDate(n.date)}</div>
-            ${tag}
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="btn-action edit"
-            onclick="window._openEdit('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.date||'')}','${escAttr(n.img||'')}','${escAttr(n.brand||'')}')">✎</button>
-          <button class="btn-action delete"
-            onclick="window._askDelete('${escAttr(n.id)}','${escAttr(n.name)}','${escAttr(n.img||'')}')">✕</button>
-        </div>
+
+    // ── Expiring soon section ──
+    const secExpiring = document.getElementById('sectionExpiring');
+    const gridExpiring = document.getElementById('gridExpiring');
+    if (expiring.length) {
+      secExpiring.style.display = '';
+      document.getElementById('expiringCount').textContent = `${expiring.length} esmalte${expiring.length>1?'s':''} — vence${expiring.length>1?'m':''} em até 30 dias`;
+      gridExpiring.innerHTML = expiring.map((n,i) => {
+        const days = getDaysUntilExpiry(n.date);
+        const label = days === 0 ? 'Vence hoje!' : days === 1 ? 'Vence amanhã' : `${days} dias`;
+        const badge = `<div class="expiring-badge">⏳ ${label}</div>`;
+        return buildCardHtml(n, i, badge);
+      }).join('');
+    } else {
+      secExpiring.style.display = 'none';
+    }
+
+    // ── Valid collection ──
+    const grid = document.getElementById('grid');
+    if (!valid.length) {
+      const isS = document.getElementById('searchInput').value.trim().length > 0;
+      const noItems = !items.length;
+      grid.innerHTML = `<div class="empty-state">
+        <span class="e-icon">${isS?'⌕':'🧴'}</span>
+        <div class="e-title">${isS?'Sem resultados':noItems?'Coleção vazia':'Sem esmaltes válidos'}</div>
+        <p>${isS?'Nenhum esmalte com esse nome.':noItems?'Toque no <strong style="color:var(--gold)">＋</strong> para adicionar<br>seu primeiro esmalte.':'Todos os esmaltes estão vencidos ou prestes a vencer.'}</p>
       </div>`;
-    }).join('');
+    } else {
+      grid.innerHTML = valid.map((n,i) => buildCardHtml(n, i)).join('');
+    }
   };
 
   let supabase;
