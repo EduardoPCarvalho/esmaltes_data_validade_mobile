@@ -813,7 +813,7 @@ body::after {
   color: var(--mauve); opacity: 0.9; margin-bottom: 6px;
 }
 .surprise-name {
-  font-family: 'Cinzel', serif;
+  font-family: 'Playfair Display', serif;
   font-size: 1.5rem; font-weight: 400; font-style: italic;
   color: var(--cream); line-height: 1.2; margin-bottom: 6px;
 }
@@ -1481,9 +1481,6 @@ body::after {
     const {data,error}=await supabase.from('esmaltes').select('*').order('date',{ascending:true});
     if(error){ setSyncStatus('err','Erro ao carregar'); window.renderGrid([]); return; }
     window._allItems=Array.isArray(data)?data:[];
-    // Rebuild _usedItems from Supabase data
-    window._usedItems={};
-    window._allItems.forEach(n=>{ if(n.used) window._usedItems[n.id]=true; });
     window.applyFilters();
     setSyncStatus('ok','Sincronizado');
   }
