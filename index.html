@@ -813,7 +813,7 @@ body::after {
   color: var(--mauve); opacity: 0.9; margin-bottom: 6px;
 }
 .surprise-name {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cinzel', serif;
   font-size: 1.5rem; font-weight: 400; font-style: italic;
   color: var(--cream); line-height: 1.2; margin-bottom: 6px;
 }
@@ -1221,11 +1221,23 @@ body::after {
     applyFilters();
   };
 
-  window.toggleUsed = function(id) {
+  window.toggleUsed = async function(id) {
     const isUsed = !!window._usedItems[id];
-    if (isUsed) { delete window._usedItems[id]; } else { window._usedItems[id] = true; }
+    const newVal = !isUsed;
+    // Optimistic update
+    if (newVal) { window._usedItems[id] = true; } else { delete window._usedItems[id]; }
     localStorage.setItem('usedItems', JSON.stringify(window._usedItems));
     applyFilters();
+    try {
+      const { error } = await window._supabase.from('esmaltes').update({ used: newVal }).eq('id', id);
+      if (error) throw error;
+    } catch(e) {
+      // Revert on error
+      if (isUsed) { window._usedItems[id] = true; } else { delete window._usedItems[id]; }
+      localStorage.setItem('usedItems', JSON.stringify(window._usedItems));
+      applyFilters();
+      showToast('❌ Erro ao salvar.');
+    }
   };
   window.applyFilters = function() {
     const query = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -1474,13 +1486,17 @@ body::after {
   };
 
   let supabase;
-  try { supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY); window.supabase=supabase; }
+  try { supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY); window.supabase=supabase; window._supabase=supabase; }
   catch(e){ setSyncStatus('err','Erro'); window.renderGrid([]); throw e; }
 
   async function fetchItems(){
     const {data,error}=await supabase.from('esmaltes').select('*').order('date',{ascending:true});
     if(error){ setSyncStatus('err','Erro ao carregar'); window.renderGrid([]); return; }
     window._allItems=Array.isArray(data)?data:[];
+    // Rebuild _usedItems from Supabase 'used' column
+    window._usedItems={};
+    window._allItems.forEach(n=>{ if(n.used) window._usedItems[n.id]=true; });
+    localStorage.setItem('usedItems', JSON.stringify(window._usedItems));
     window.applyFilters();
     setSyncStatus('ok','Sincronizado');
   }
