@@ -715,6 +715,129 @@ body::after {
   height: 1px; margin: 28px 0;
   background: linear-gradient(90deg, transparent, var(--border), transparent);
 }
+
+/* ───── ALERT BANNER ───── */
+.alert-banner {
+  display: none; margin-bottom: 14px;
+  border-radius: 10px; padding: 12px 15px;
+  gap: 10px; align-items: flex-start;
+  animation: cardIn 0.4s cubic-bezier(0.22,1,0.36,1) both;
+}
+.alert-banner.visible { display: flex; }
+.alert-banner.banner-expired {
+  background: rgba(232,80,102,0.08);
+  border: 1px solid rgba(232,80,102,0.25);
+}
+.alert-banner.banner-expiring {
+  background: rgba(232,160,64,0.08);
+  border: 1px solid rgba(232,160,64,0.25);
+}
+.alert-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.alert-body { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.alert-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem; letter-spacing: 0.16em; text-transform: uppercase;
+  font-weight: 500;
+}
+.banner-expired  .alert-title { color: #f08090; }
+.banner-expiring .alert-title { color: #e8b060; }
+.alert-text {
+  font-size: 0.75rem; color: var(--text2); font-weight: 300; line-height: 1.5;
+}
+.alert-text strong { font-weight: 500; color: var(--text); }
+.alert-close {
+  background: none; border: none; color: var(--muted);
+  font-size: 0.7rem; cursor: pointer; padding: 0; flex-shrink: 0;
+  line-height: 1; margin-top: 1px;
+  transition: color 0.2s;
+}
+.alert-close:hover { color: var(--text2); }
+
+/* ───── SURPREENDA-ME BUTTON ───── */
+.fab-surprise {
+  position: fixed;
+  bottom: calc(var(--safe-bot) + 92px);
+  right: 20px; z-index: 200;
+  width: 54px; height: 54px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--mauve) 0%, #c880e0 100%);
+  color: #fff; font-size: 1.3rem;
+  border: none; cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(155,111,168,0.3), 0 10px 30px rgba(155,111,168,0.25);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.fab-surprise:active { transform: scale(0.86) rotate(20deg); }
+
+/* ───── SURPRISE MODAL ───── */
+.surprise-overlay {
+  position: fixed; inset: 0; background: rgba(6,4,10,0.75); z-index: 600;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.28s;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  padding: 24px;
+}
+.surprise-overlay.open { opacity: 1; pointer-events: all; }
+.surprise-box {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 20px; width: 100%; max-width: 340px;
+  overflow: hidden; position: relative;
+  transform: scale(0.88) translateY(20px);
+  transition: transform 0.32s cubic-bezier(0.22,1,0.36,1);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(155,111,168,0.15);
+}
+.surprise-overlay.open .surprise-box { transform: scale(1) translateY(0); }
+.surprise-deco {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--mauve), #c880e0, transparent);
+  opacity: 0.7;
+}
+.surprise-img-wrap {
+  width: 100%; aspect-ratio: 3/4; overflow: hidden; position: relative;
+  background: linear-gradient(160deg, #1e1528 0%, #130f1c 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.surprise-img-wrap img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.surprise-img-wrap::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(29,21,36,0.95) 0%, rgba(29,21,36,0.3) 50%, transparent 80%);
+}
+.surprise-no-img { font-size: 4rem; opacity: 0.15; }
+.surprise-content {
+  padding: 20px 22px 24px; position: relative;
+}
+.surprise-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.46rem; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--mauve); opacity: 0.9; margin-bottom: 6px;
+}
+.surprise-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; font-weight: 400; font-style: italic;
+  color: var(--cream); line-height: 1.2; margin-bottom: 6px;
+}
+.surprise-meta {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.surprise-date { font-size: 0.65rem; color: var(--muted); font-weight: 300; }
+.surprise-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-surprise-again {
+  padding: 13px; border-radius: 9px;
+  background: rgba(155,111,168,0.12); border: 1px solid rgba(155,111,168,0.28);
+  color: #c890e8; font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem; font-weight: 500; cursor: pointer;
+  transition: background 0.2s; letter-spacing: 0.04em;
+}
+.btn-surprise-again:active { background: rgba(155,111,168,0.22); }
+.btn-surprise-close {
+  padding: 13px; border-radius: 9px;
+  border: 1px solid var(--border); background: transparent;
+  font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+  color: var(--muted); cursor: pointer; transition: background 0.2s;
+}
+.btn-surprise-close:active { background: var(--glass); }
 </style>
 </head>
 <body>
@@ -793,6 +916,24 @@ body::after {
 <!-- ── MAIN GRID ── -->
 <div class="main">
 
+  <!-- Alert banners -->
+  <div class="alert-banner banner-expired" id="alertExpired">
+    <span class="alert-icon">🚨</span>
+    <div class="alert-body">
+      <span class="alert-title">Esmaltes vencidos</span>
+      <span class="alert-text" id="alertExpiredText"></span>
+    </div>
+    <button class="alert-close" onclick="document.getElementById('alertExpired').classList.remove('visible')">✕</button>
+  </div>
+  <div class="alert-banner banner-expiring" id="alertExpiring">
+    <span class="alert-icon">⏳</span>
+    <div class="alert-body">
+      <span class="alert-title">Prestes a vencer</span>
+      <span class="alert-text" id="alertExpiringText"></span>
+    </div>
+    <button class="alert-close" onclick="document.getElementById('alertExpiring').classList.remove('visible')">✕</button>
+  </div>
+
   <!-- Stats panel -->
   <div class="stats-panel" id="statsPanel">
     <div class="stat-card" id="statTotal">
@@ -842,7 +983,30 @@ body::after {
 </div>
 
 <button class="fab" onclick="openSheet()" aria-label="Adicionar esmalte">＋</button>
+<button class="fab-surprise" onclick="window.openSurprise()" aria-label="Surpreenda-me" title="Surpreenda-me!">🎲</button>
 <div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<!-- ── SURPRISE MODAL ── -->
+<div class="surprise-overlay" id="surpriseOverlay" onclick="e => { if(e.target===this) window.closeSurprise(); }">
+  <div class="surprise-box">
+    <div class="surprise-deco"></div>
+    <div class="surprise-img-wrap" id="surpriseImgWrap">
+      <span class="surprise-no-img">🧴</span>
+    </div>
+    <div class="surprise-content">
+      <div class="surprise-eyebrow">✦ Use hoje</div>
+      <div class="surprise-name" id="surpriseName">—</div>
+      <div class="surprise-meta">
+        <span class="surprise-date" id="surpriseDate"></span>
+        <span id="surpriseBrandTag"></span>
+      </div>
+      <div class="surprise-actions">
+        <button class="btn-surprise-again" onclick="window.openSurprise()">🎲 Outro!</button>
+        <button class="btn-surprise-close" onclick="window.closeSurprise()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ── SHEET: Adicionar ── -->
 <div class="sheet" id="sheet">
@@ -969,7 +1133,70 @@ body::after {
   window._allItems = [];
   window._activeFilter = 'all';
   window._activeStatus = 'all';
-  window._usedItems = {};
+  window._usedItems = JSON.parse(localStorage.getItem('usedItems') || '{}');
+
+  // ── Surpreenda-me ──
+  window.openSurprise = function() {
+    const escHtml = window._escHtml || (s => s);
+    const fmtDate = window._fmtDate || (d => d);
+    const valid = window._allItems.filter(n => !n.date || window.getDaysUntilExpiry(n.date) > 0);
+    if (!valid.length) { showToast('Nenhum esmalte válido na coleção!'); return; }
+    const n = valid[Math.floor(Math.random() * valid.length)];
+    const BL = {risque:'Risqué',impala:'Impala',colorama:'Colorama',outras:'Outras'};
+    const b = n.brand||''; const bl = BL[b]||'';
+    const wrap = document.getElementById('surpriseImgWrap');
+    wrap.innerHTML = n.img
+      ? `<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" onerror="this.style.display='none'"/>`
+      : `<span class="surprise-no-img">🧴</span>`;
+    document.getElementById('surpriseName').textContent = n.name || '—';
+    document.getElementById('surpriseDate').textContent = n.date ? `Válido até ${fmtDate(n.date)}` : '';
+    document.getElementById('surpriseBrandTag').innerHTML = bl
+      ? `<span class="brand-tag ${escHtml(b)}">${escHtml(bl)}</span>` : '';
+    document.getElementById('surpriseOverlay').classList.add('open');
+  };
+  window.closeSurprise = function() {
+    document.getElementById('surpriseOverlay').classList.remove('open');
+  };
+  document.getElementById('surpriseOverlay').addEventListener('click', function(e) {
+    if (e.target === this) window.closeSurprise();
+  });
+
+  // ── Alert banners ──
+  window.updateAlerts = function() {
+    const escHtml = window._escHtml || (s => s);
+    const fmtDate = window._fmtDate || (d => d);
+    const all = window._allItems;
+    const expired  = all.filter(n => n.date && window.getDaysUntilExpiry(n.date) < 0);
+    const expiring = all.filter(n => n.date && window.getDaysUntilExpiry(n.date) >= 0 && window.getDaysUntilExpiry(n.date) <= 7);
+
+    const elExp  = document.getElementById('alertExpired');
+    const elExpi = document.getElementById('alertExpiring');
+
+    if (expired.length) {
+      const names = expired.slice(0,2).map(n=>`<strong>${escHtml(n.name)}</strong>`).join(', ');
+      const extra = expired.length > 2 ? ` e mais ${expired.length-2}` : '';
+      document.getElementById('alertExpiredText').innerHTML =
+        `${names}${extra} ${expired.length===1?'está vencido':'estão vencidos'}. Considere descartar.`;
+      elExp.classList.add('visible');
+    } else {
+      elExp.classList.remove('visible');
+    }
+
+    if (expiring.length) {
+      const soonest = expiring.sort((a,b) => a.date.localeCompare(b.date))[0];
+      const days = window.getDaysUntilExpiry(soonest.date);
+      const when = days === 0 ? 'hoje' : days === 1 ? 'amanhã' : `em ${days} dias`;
+      document.getElementById('alertExpiringText').innerHTML =
+        `<strong>${escHtml(soonest.name)}</strong> vence ${when}${expiring.length>1?` e mais ${expiring.length-1} esmalte${expiring.length>2?'s':''}`:''}. Use logo!`;
+      elExpi.classList.add('visible');
+    } else {
+      elExpi.classList.remove('visible');
+    }
+
+    // title tab
+    const totalProblems = expired.length;
+    document.title = totalProblems > 0 ? `(${totalProblems}) My collection` : 'My collection';
+  };
 
   window.getDaysUntilExpiry = function(dateStr) {
     if (!dateStr) return null;
@@ -994,20 +1221,11 @@ body::after {
     applyFilters();
   };
 
-  window.toggleUsed = async function(id) {
+  window.toggleUsed = function(id) {
     const isUsed = !!window._usedItems[id];
-    // Optimistic update
     if (isUsed) { delete window._usedItems[id]; } else { window._usedItems[id] = true; }
+    localStorage.setItem('usedItems', JSON.stringify(window._usedItems));
     applyFilters();
-    try {
-      const { error } = await window.supabase.from('esmaltes').update({ used: !isUsed }).eq('id', id);
-      if (error) throw error;
-    } catch(e) {
-      // Revert on error
-      if (isUsed) { window._usedItems[id] = true; } else { delete window._usedItems[id]; }
-      applyFilters();
-      showToast('❌ Erro ao salvar.');
-    }
   };
   window.applyFilters = function() {
     const query = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -1145,6 +1363,9 @@ body::after {
     if(!d) return '';
     const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`;
   }
+  // Expose helpers needed by non-module code
+  window._escHtml = escHtml;
+  window._fmtDate = fmtDate;
 
   function buildCardHtml(n, i, extra='') {
     const b=n.brand||''; const bl=BRAND_LABELS[b]||'';
@@ -1201,6 +1422,7 @@ body::after {
     document.getElementById('statExpiredNum').textContent  = totalExpired;
     document.getElementById('statExpired').className  = 'stat-card' + (totalExpired  > 0 ? ' danger' : '');
     document.getElementById('statExpiring').className = 'stat-card' + (totalExpiring > 0 ? ' warn'   : '');
+    window.updateAlerts();
 
     const expired  = items.filter(n => n.date && getDaysUntilExpiry(n.date) < 0);
     const expiring = items.filter(n => n.date && getDaysUntilExpiry(n.date) >= 0 && getDaysUntilExpiry(n.date) <= WARN_DAYS);
