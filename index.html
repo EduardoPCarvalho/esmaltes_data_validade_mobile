@@ -96,7 +96,7 @@ body::after {
 
 .brand-sup {
   font-family: 'Cinzel', serif;
-  font-size: 0.5rem; letter-spacing: 0.3em; text-transform: uppercase;
+  font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase;
   color: var(--gold); opacity: 0.8;
 }
 
@@ -110,7 +110,7 @@ body::after {
 }
 
 .brand-sub {
-  font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+  font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
   color: var(--muted); font-weight: 300;
 }
 
@@ -130,7 +130,7 @@ body::after {
   font-size: 1.55rem; font-weight: 400; color: var(--gold); line-height: 1;
 }
 .count-label {
-  font-size: 0.48rem; letter-spacing: 0.16em; text-transform: uppercase;
+  font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--muted);
 }
 
@@ -207,7 +207,7 @@ body::after {
 .sync-dot.err     { background: #e85066; }
 .sync-dot.loading { background: var(--gold); animation: pulse 1s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
-.sync-label { font-size: 0.58rem; color: var(--muted); font-weight: 300; letter-spacing: 0.06em; }
+.sync-label { font-size: 0.68rem; color: var(--muted); font-weight: 300; letter-spacing: 0.06em; }
 .live-pill {
   display: inline-flex; align-items: center; gap: 4px;
   background: rgba(82,199,122,0.07); border: 1px solid rgba(82,199,122,0.2);
@@ -227,7 +227,7 @@ body::after {
 
 .grid-label {
   font-family: 'Cinzel', serif;
-  font-size: 0.5rem; letter-spacing: 0.28em; text-transform: uppercase;
+  font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase;
   color: var(--muted); margin-bottom: 14px;
   display: flex; align-items: center; gap: 10px;
 }
@@ -419,7 +419,7 @@ body::after {
 .sheet-header { margin-bottom: 22px; }
 .sheet-eyebrow {
   font-family: 'Cinzel', serif;
-  font-size: 0.48rem; letter-spacing: 0.28em; text-transform: uppercase;
+  font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase;
   color: var(--gold); opacity: 0.7; margin-bottom: 5px;
 }
 .sheet h2 {
@@ -432,7 +432,7 @@ body::after {
 .field { margin-bottom: 17px; }
 .field label {
   display: block; font-family: 'Cinzel', serif;
-  font-size: 0.48rem; font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase;
+  font-size: 0.6rem; font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--gold); opacity: 0.75; margin-bottom: 8px;
 }
 .field input[type="text"],
@@ -564,6 +564,21 @@ body::after {
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ───── LOAD MORE ───── */
+.btn-load-more {
+  display: block; width: 100%; margin-top: 18px;
+  padding: 14px; border-radius: 10px;
+  border: 1px solid var(--border2); background: var(--glass);
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 400;
+  color: var(--text2); cursor: pointer; letter-spacing: 0.04em;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.btn-load-more:active {
+  background: rgba(200,169,106,0.08);
+  border-color: rgba(200,169,106,0.3);
+  color: var(--gold2);
+}
+
 @media (min-width: 600px) {
   .grid { grid-template-columns: repeat(3, 1fr); }
   .main { max-width: 760px; margin: 0 auto; }
@@ -598,7 +613,7 @@ body::after {
 .stat-card.ok     .stat-num { color: #52c77a; }
 .stat-card:not(.danger):not(.warn):not(.ok) .stat-num { color: var(--gold); }
 .stat-lbl {
-  font-size: 0.46rem; letter-spacing: 0.14em; text-transform: uppercase;
+  font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--muted); font-family: 'Cinzel', serif;
 }
 
@@ -652,7 +667,7 @@ body::after {
 .section-title-wrap { display: flex; flex-direction: column; gap: 1px; }
 .section-eyebrow {
   font-family: 'Cinzel', serif;
-  font-size: 0.46rem; letter-spacing: 0.28em; text-transform: uppercase;
+  font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase;
 }
 .section-count {
   font-size: 0.58rem; color: var(--muted); font-weight: 300;
@@ -736,7 +751,7 @@ body::after {
 .alert-body { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .alert-title {
   font-family: 'Cinzel', serif;
-  font-size: 0.56rem; letter-spacing: 0.16em; text-transform: uppercase;
+  font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
   font-weight: 500;
 }
 .banner-expired  .alert-title { color: #f08090; }
@@ -1045,7 +1060,7 @@ body::after {
     </div>
   </div>
   <div class="field">
-    <label>Data</label>
+    <label>Validade</label>
     <input type="date" id="dateInput"/>
   </div>
   <button class="btn-submit" id="btnSubmit" onclick="addNail()">Adicionar à Coleção</button>
@@ -1092,7 +1107,7 @@ body::after {
     </div>
   </div>
   <div class="field">
-    <label>Data</label>
+    <label>Validade</label>
     <input type="date" id="editDateInput"/>
   </div>
   <button class="btn-submit" id="btnEditSubmit" onclick="saveEdit()">Salvar Alterações</button>
@@ -1102,7 +1117,10 @@ body::after {
 <!-- ── Modal: Confirmar Delete ── -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
-    <div class="modal-icon">🗑️</div>
+    <div class="modal-delete-preview" id="modalPreviewWrap" style="display:none">
+      <img id="modalPreviewImg" alt="" style="width:72px;height:108px;object-fit:cover;border-radius:10px;border:1px solid var(--border2);display:block;margin:0 auto 14px;"/>
+    </div>
+    <div class="modal-icon" id="modalIconFallback">🗑️</div>
     <p>Remover <strong id="modalName"></strong> da sua coleção?</p>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
@@ -1421,6 +1439,35 @@ body::after {
     return window.getDaysUntilExpiry(dateStr);
   }
 
+  const PAGE_SIZE = 20;
+  window._validBatch = [];
+  window._validPage  = 0;
+
+  function renderBatch(grid, items, page) {
+    const start = page * PAGE_SIZE;
+    const slice = items.slice(start, start + PAGE_SIZE);
+    grid.insertAdjacentHTML('beforeend', slice.map((n,i) => buildCardHtml(n, start+i)).join(''));
+  }
+
+  function addLoadMoreBtn(grid, items, page) {
+    const existing = document.getElementById('loadMoreBtn');
+    if (existing) existing.remove();
+    const remaining = items.length - (page + 1) * PAGE_SIZE;
+    if (remaining <= 0) return;
+    const btn = document.createElement('button');
+    btn.id = 'loadMoreBtn';
+    btn.className = 'btn-load-more';
+    btn.textContent = `Ver mais ${Math.min(remaining, PAGE_SIZE)} esmaltes`;
+    btn.onclick = function() {
+      window._validPage++;
+      renderBatch(grid, items, window._validPage);
+      addLoadMoreBtn(grid, items, window._validPage);
+      btn.remove();
+    };
+    // loadMoreBtn sits outside the grid (after it)
+    grid.parentNode.insertBefore(btn, grid.nextSibling);
+  }
+
   window.renderGrid = function(items, isFiltered) {
     const today = new Date(); today.setHours(0,0,0,0);
     const WARN_DAYS = 30;
@@ -1472,6 +1519,8 @@ body::after {
 
     // ── Valid collection ──
     const grid = document.getElementById('grid');
+    const existingMore = document.getElementById('loadMoreBtn');
+    if (existingMore) existingMore.remove();
     if (!valid.length) {
       const isS = document.getElementById('searchInput').value.trim().length > 0;
       const noItems = !items.length;
@@ -1481,7 +1530,11 @@ body::after {
         <p>${isS?'Nenhum esmalte com esse nome.':noItems?'Toque no <strong style="color:var(--gold)">＋</strong> para adicionar<br>seu primeiro esmalte.':'Todos os esmaltes estão vencidos ou prestes a vencer.'}</p>
       </div>`;
     } else {
-      grid.innerHTML = valid.map((n,i) => buildCardHtml(n, i)).join('');
+      window._validBatch = valid;
+      window._validPage  = 0;
+      grid.innerHTML = '';
+      renderBatch(grid, valid, 0);
+      addLoadMoreBtn(grid, valid, 0);
     }
   };
 
@@ -1595,6 +1648,16 @@ body::after {
   window._askDelete=function(id,name,img){
     _delId=id; _delImg=img;
     document.getElementById('modalName').textContent=name;
+    const wrap=document.getElementById('modalPreviewWrap');
+    const pic=document.getElementById('modalPreviewImg');
+    const icon=document.getElementById('modalIconFallback');
+    if(img){
+      pic.src=img;
+      pic.onerror=function(){ wrap.style.display='none'; icon.style.display='block'; };
+      wrap.style.display='block'; icon.style.display='none';
+    } else {
+      wrap.style.display='none'; icon.style.display='block';
+    }
     document.getElementById('modalOverlay').classList.add('open');
   };
   window.confirmDelete=async function(){
