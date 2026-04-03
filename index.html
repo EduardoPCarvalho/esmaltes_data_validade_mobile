@@ -5,12 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="theme-color" content="#0e0b0f"/>
+  <meta name="theme-color" content="#0e0b0f" id="metaThemeColor"/>
   <title>My collection</title>
-  <link rel="shortcut icon" href="B.ico" type="image/x-icon">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="icons/icon-192.png"/>
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png"/>
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Esmaltes"/>
+  <meta name="application-name" content="Esmaltes"/>
+  <meta name="msapplication-TileColor" content="#0e0b0f"/>
+  <meta name="msapplication-TileImage" content="icons/icon-144.png"/>
+
+  <link rel="shortcut icon" href="B.ico" type="image/x-icon"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500&family=Cinzel:wght@400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
-</head>
 </head>
 <body>
 
@@ -294,5 +305,75 @@
 
 <script src="script.js"></script>
 <script type="module" src="app.js"></script>
+
+<!-- Banner "Instalar app" -->
+<div id="pwaInstallBanner" style="
+  display:none; position:fixed; bottom:calc(env(safe-area-inset-bottom,0px) + 16px);
+  left:50%; transform:translateX(-50%); z-index:9999;
+  background:var(--bg2); border:1px solid var(--border2);
+  border-radius:16px; padding:14px 18px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.35);
+  display:flex; align-items:center; gap:12px;
+  font-family:'DM Sans',sans-serif; min-width:280px; max-width:340px;
+" id="pwaInstallBanner">
+  <img src="icons/icon-72.png" style="width:40px;height:40px;border-radius:10px;flex-shrink:0"/>
+  <div style="flex:1">
+    <div style="font-size:0.84rem;font-weight:500;color:var(--text)">Instalar Esmaltes</div>
+    <div style="font-size:0.74rem;color:var(--text2)">Adicionar à tela inicial</div>
+  </div>
+  <button onclick="window._pwaDeferredPrompt&&window._pwaDeferredPrompt.prompt();document.getElementById('pwaInstallBanner').style.display='none'" style="
+    background:var(--gold);color:#1a0f00;border:none;border-radius:8px;
+    padding:7px 13px;font-size:0.78rem;font-weight:500;cursor:pointer;white-space:nowrap
+  ">Instalar</button>
+  <button onclick="document.getElementById('pwaInstallBanner').style.display='none';localStorage.setItem('pwaDismissed','1')" style="
+    background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:0 2px;line-height:1
+  ">✕</button>
+</div>
+
+<script>
+  // Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        // Quando há nova versão disponível
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              showToast('✦ Nova versão disponível — recarregue!');
+            }
+          });
+        });
+      }).catch(() => {});
+    });
+  }
+
+  // Banner de instalação (Android/Chrome)
+  window._pwaDeferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    window._pwaDeferredPrompt = e;
+    if (!localStorage.getItem('pwaDismissed')) {
+      setTimeout(() => {
+        const b = document.getElementById('pwaInstallBanner');
+        if (b) b.style.display = 'flex';
+      }, 3000);
+    }
+  });
+
+  // Esconde banner após instalar
+  window.addEventListener('appinstalled', () => {
+    const b = document.getElementById('pwaInstallBanner');
+    if (b) b.style.display = 'none';
+    showToast('✦ App instalado com sucesso!');
+  });
+
+  // Atalho da URL: ?action=add abre o sheet de adicionar
+  if (new URLSearchParams(location.search).get('action') === 'add') {
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => window.openSheet && window.openSheet(), 500);
+    });
+  }
+</script>
 </body>
 </html>
