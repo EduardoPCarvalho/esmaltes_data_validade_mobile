@@ -10,7 +10,7 @@
     const isLight = saved ? saved === 'light' : !prefersDark;
     if (isLight) document.documentElement.classList.add('light');
     document.getElementById('themeToggle').textContent = isLight ? '☀️' : '🌙';
-    document.getElementById('metaThemeColor').content = isLight ? '#f5f0eb' : '#0e0b0f';
+    document.querySelector('meta[name="theme-color"]').content = isLight ? '#f5f0eb' : '#0e0b0f';
   })();
 
   window.toggleTheme = function() {
@@ -18,7 +18,7 @@
     const nowLight = html.classList.toggle('light');
     const btn = document.getElementById('themeToggle');
     btn.textContent = nowLight ? '☀️' : '🌙';
-    document.getElementById('metaThemeColor').content = nowLight ? '#f5f0eb' : '#0e0b0f';
+    document.querySelector('meta[name="theme-color"]').content = nowLight ? '#f5f0eb' : '#0e0b0f';
     localStorage.setItem('theme', nowLight ? 'light' : 'dark');
   };
 
