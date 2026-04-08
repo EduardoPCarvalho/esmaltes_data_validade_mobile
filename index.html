@@ -32,6 +32,7 @@
         <span class="brand-sub">Minha coleção por validade</span>
       </div>
       <div style="display:flex;align-items:flex-start;gap:8px">
+        <button class="theme-toggle" id="galleryToggle" onclick="window.toggleGallery()" title="Modo galeria" aria-label="Modo galeria">⊞</button>
         <button class="theme-toggle" id="themeToggle" onclick="window.toggleTheme()" title="Alternar tema" aria-label="Alternar tema claro/escuro">🌙</button>
         <div class="count-badge">
           <span class="count-num" id="countNum">0</span>
@@ -287,6 +288,21 @@
       <button class="btn-confirm-del" onclick="confirmDelete()">Remover</button>
     </div>
   </div>
+</div>
+
+<!-- ── GALERIA FULLSCREEN ── -->
+<div class="gallery-overlay" id="galleryOverlay">
+  <button class="gallery-close" onclick="window.closeGallery()">✕</button>
+  <button class="gallery-nav prev" id="galleryPrev" onclick="window.galleryNav(-1)">‹</button>
+  <button class="gallery-nav next" id="galleryNext" onclick="window.galleryNav(1)">›</button>
+  <div class="gallery-img-wrap" id="galleryImgWrap">
+    <span class="gallery-no-img">🧴</span>
+  </div>
+  <div class="gallery-info">
+    <div class="gallery-name" id="galleryName"></div>
+    <div class="gallery-meta" id="galleryMeta"></div>
+  </div>
+  <div class="gallery-dots" id="galleryDots"></div>
 </div>
 
 <div id="toast"></div>

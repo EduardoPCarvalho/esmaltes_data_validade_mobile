@@ -169,6 +169,99 @@
     applyFilters();
   };
 
+  window.closeGallery = function() {
+    const ov = document.getElementById('galleryOverlay');
+    ov.classList.remove('open');
+    if (ov._ts) ov.removeEventListener('touchstart', ov._ts);
+    if (ov._te) ov.removeEventListener('touchend',   ov._te);
+    document.getElementById('galleryToggle').textContent = '⊞';
+  };
+
+  window.galleryNav = function(dir) {
+    const len = window._galleryItems.length;
+    window._galleryIndex = (window._galleryIndex + dir + len) % len;
+    window._renderGallerySlide(window._galleryIndex);
+  };
+
+  window._renderGallerySlide = function(idx) {
+    const items = window._galleryItems;
+    const n = items[idx];
+    const escHtml = window._escHtml || (s => s);
+    const fmtDate = window._fmtDate || (d => d);
+    const BL = {risque:'Risqué',impala:'Impala',colorama:'Colorama',outras:'Outras'};
+
+    const wrap = document.getElementById('galleryImgWrap');
+    wrap.style.opacity = '0';
+    setTimeout(() => {
+      wrap.innerHTML = n.img
+        ? `<img src="${escHtml(n.img)}" alt="${escHtml(n.name)}" onerror="this.style.display='none'"/>`
+        : `<span class="gallery-no-img">🧴</span>`;
+      wrap.style.opacity = '1';
+    }, 120);
+
+    document.getElementById('galleryName').textContent = n.name || '—';
+    const brand = BL[n.brand] || '';
+    const date  = n.date ? `Válido até ${fmtDate(n.date)}` : '';
+    document.getElementById('galleryMeta').textContent = [brand, date].filter(Boolean).join(' · ');
+
+    // dots — show max 12 for performance
+    const dots = document.getElementById('galleryDots');
+    const show = Math.min(items.length, 12);
+    const offset = Math.max(0, Math.min(idx - Math.floor(show/2), items.length - show));
+    dots.innerHTML = Array.from({length: show}, (_,i) => {
+      const real = i + offset;
+      return `<div class="gallery-dot${real===idx?' active':''}" onclick="window._renderGallerySlide(${real});window._galleryIndex=${real}"></div>`;
+    }).join('');
+
+    document.getElementById('galleryPrev').disabled = false;
+    document.getElementById('galleryNext').disabled = false;
+  };
+
+  // ── Confete ──
+  window.launchConfetti = function() {
+    const colors = ['#c8a96a','#e8c98a','#c4697c','#e8869a','#9b6fa8','#f7e4b8','#fff'];
+    const count = 120;
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99999';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const pieces = Array.from({length: count}, () => ({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 120,
+      r: 4 + Math.random() * 5,
+      d: 2.5 + Math.random() * 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      tilt: Math.random() * 10 - 5,
+      tiltSpeed: 0.1 + Math.random() * 0.2,
+      angle: 0,
+      shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+    let frame = 0;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(p => {
+        p.angle += p.tiltSpeed;
+        p.tilt = Math.sin(p.angle) * 12;
+        p.y += p.d;
+        p.x += Math.sin(p.angle) * 1.2;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.tilt * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, 1 - frame / 140);
+        if (p.shape === 'rect') { ctx.fillRect(-p.r, -p.r/2, p.r*2, p.r); }
+        else { ctx.beginPath(); ctx.arc(0, 0, p.r/2, 0, Math.PI*2); ctx.fill(); }
+        ctx.restore();
+      });
+      frame++;
+      if (frame < 160) requestAnimationFrame(draw);
+      else canvas.remove();
+    }
+    draw();
+  };
+
   window.openSheet    = () => { document.getElementById('sheet').classList.add('open');     document.getElementById('overlay').classList.add('open'); };
   window.closeSheet   = () => { document.getElementById('sheet').classList.remove('open');  document.getElementById('overlay').classList.remove('open'); };
   window.openEditSheet  = () => { document.getElementById('editSheet').classList.add('open');    document.getElementById('editOverlay').classList.add('open'); };

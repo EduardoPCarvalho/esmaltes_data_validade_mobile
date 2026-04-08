@@ -218,7 +218,7 @@
       document.getElementById('urlInput').value='';
       window.updateBrandDot('brandDotPreview','brandInput');
       clearPreview(); window._imgBase64=null; window._imgFile=null;
-      closeSheet(); showToast('✦ Esmalte adicionado!');
+      closeSheet(); showToast('✦ Esmalte adicionado!'); window.launchConfetti && window.launchConfetti();
     }catch(e){ showToast('❌ Erro: '+(e.message||'verifique a conexão')); }
     finally{ btn.disabled=false; btn.textContent='Adicionar à Coleção'; }
   };
